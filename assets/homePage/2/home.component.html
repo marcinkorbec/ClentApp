@@ -1,0 +1,179 @@
+<app-menu [groupsAsDrop]="false" (toggleExternalGroups)="handleGroupsVisibility()"></app-menu>
+
+<nav class="sidebar" *ngIf="isSidebar">
+
+    <div class="sticky groups-wrapper" [ngClass]="{'tablet-hidden': !groupsOpened}">
+
+        <div class="groups-wrapper">
+            <button class="ti-close close tablet-block" (click)="handleGroupsVisibility(false)"></button>
+
+            <app-groups [groupId]="treeParameters?.groupId" [parentId]="treeParameters?.parentId"
+                [isProductsPage]="false">
+            </app-groups>
+        </div>
+
+    </div>
+</nav>
+
+
+<div #container [innerHtml]="safeContent" class="clear" [ngClass]="{'full': !isSidebar}">
+</div>
+<div>
+
+</div>
+<div>
+    <div class="content">
+        <div>
+            <h2 class="section-title">
+                <img src="/ClientApp/assets/images/icons/plus.svg" />WYBIERZ PRODUKTY Z 10x GRUP PRODUKTOWYCH
+            </h2>
+            <div class="recommended-categories-icons">
+                <div class="category-icon" *ngFor="let category of categoriesIcons">
+                    <img class="category-icon-image" src={{category.imageSrc}} alt={{category.imageAlt}} />
+                </div>
+            </div>
+        </div>
+        <div class="products-news-container">
+            <div class="section-title-container">
+                <h2 class="section-title">
+                    <img src="/ClientApp/assets/images/icons/plus.svg" />NOWOŚCI PRODUKTOWE
+                </h2>
+                <button>
+                    Pokaż wszystko
+                </button>
+            </div>
+
+            <div class="products-news">
+                <div class="product" *ngFor="let product of productNews">
+                    <a href="{{product.productURL}}">
+                        <div>
+                            <img class="product-image" src={{product.imageSrc}} alt={{product.imageAlt}} />
+                            <div class="product-name">{{product.name | uppercase}}</div>
+                            <label class="product-label">NOWOŚĆ</label>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="news-container">
+            <div class="section-title-container">
+                <h2 class="section-title">
+                    <img src="/ClientApp/assets/images/icons/plus.svg" />AKTUALNOŚCI
+                </h2>
+                <button>
+                    Pokaż wszystko
+                </button>
+            </div>
+            <div class="news-items">
+                <div class="news-item" *ngFor="let item of news">
+                    <img class="news-item-image" src={{item.imageSrc}} alt={{item.imageAlt}} />
+                    <div class="news-item-first-row">
+                        <div class="news-item-first-row-date">
+                            <span class="month">{{item.date | date: 'MMM':'':'pl'}}</span>
+                            <span class="day">{{item.date | date: 'dd'}}</span>
+                            <span class="year">{{item.date | date: 'yyyy'}}</span>
+                        </div>
+                        <div class="news-item-first-row-type">
+                            <span *ngFor="let type of item.types">{{type}}</span>
+                        </div>
+                    </div>
+                    <div class="news-item-title">{{item.title | uppercase}}</div>
+                    <div class="news-item-description">{{item.description}}</div>
+                    <div class="news-item-tags">
+                        <span *ngFor="let tag of item.tags">#{{tag}}</span>
+                    </div>
+                    <div class="news-item-button">
+                        <a class="btn black-button">
+                            <span>CZYTAJ WIĘCEJ</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="categories.length > 0">
+            <h2 class="section-title">
+                <img src="/ClientApp/assets/images/icons/plus.svg" />WYBIERZ PRODUKTY Z 10x GRUP PRODUKTOWYCH
+            </h2>
+            <div class="recommended-categories">
+                <div class="category" *ngFor="let category of categories">
+                    <h3 class="category-header">{{category.header}}</h3>
+                    <img class="category-image" src={{category.imageSrc}} alt={{category.imageAlt}} />
+                    <button class="category-check-button" href={{category.buttonURL}}>Sprawdź</button>
+                </div>
+            </div>
+        </div>
+        <div class="b2b-platform-container">
+            <div class="img-container"><img src="/ClientApp/assets/images/main-page/platforma_B2b.png" alt=""></div>
+            <div class="text-container">
+                <h2 class="section-title">
+                    <img src="/ClientApp/assets/images/icons/plus.svg" />PLATFORMA B2B STALCO
+                </h2>
+                <p>Platforma internetowa B2B STALCO to specjalistyczny system zamówień narzędzi i
+                    elektronarzędzi. Nasza platforma B2B oferuje szeroki wybór w aż dziewięciu
+                    grupach produktowych tj: narzędzi ręcznych, systemów zamocowań, osprzętu do
+                    elektronarzędzi jak i samych elektronarzędzi, narzędzi ogrodniczych, odzieży
+                    BHP, akcesorii malarskich oraz chemii technicznej. Nasza platforma B2B dostarcza
+                    narzędzia do pracy setki sklepom.
+                </p>
+            </div>
+        </div>
+        <div class="directories">
+            <div class="left">
+                <h2 class="section-title">
+                    <img src="/ClientApp/assets/images/icons/plus.svg" />KATALOGI
+                </h2>
+                <p>
+                    Znajdź wszystkie niezbędne informacje o produktach w jednym miejscu. <br>
+                    Przegladaj i pobierz katalog produktowy STALCO.
+                </p>
+                <div>
+                    <a class="btn green-button" [routerLink]="['/katalogitechniczne']">
+                        <span><i class="icon ti-angle-double-right"></i> Zobacz nasze katalogi</span>
+                    </a>
+                </div>
+            </div>
+            <div class="right">
+                <div></div>
+            </div>
+        </div>
+        <div class="shop-info">
+            <div class="about-company">
+                <div class="circle">
+                    <span style="font-weight: bold;" class="upper-case">6000</span>
+                    <span class="lower-case">produktów <br />w ofercie</span>
+                </div>
+                <div class="circle">
+                    <span style="font-weight: bold;" class="upper-case">20</span>
+                    <span class="lower-case">lat na <br />rynku</span>
+                </div>
+                <div class="circle">
+                    <span style="font-weight: bold;" class="upper-case">+700</span>
+                    <span class="lower-case">punktów <br />sprzedaży</span>
+                </div>
+                <div class="circle">
+                    <span style="font-weight: bold;" class="upper-case">+270</span>
+                    <span class="lower-case">pracowników</span>
+                </div>
+                <div class="circle">
+                    <span style="font-weight: bold;" class="upper-case">18</span>
+                    <span class="lower-case">działów <br />w firmie</span>
+                </div>
+            </div>
+            <div class="find-shop">
+                <div class="find-shop-image"><img src="/ClientApp/assets/images/main-page/mapa.png" alt="mapa"></div>
+                <div class="find-shop-desc">
+                    <h2 class="section-title"><img src="/ClientApp/assets/images/icons/plus.svg" />ZNAJDŹ SKLEP</h2>
+                    <p>
+                        STALCO to marka globalna, działająca w Polsce, ale reprezentowana w całej Europie. <br />
+                        Znajdź lokalnego sprzedawcę STALCO na naszej interaktywnej mapie.
+                    </p>
+                    <div class="buttons-container">
+                        <a class="btn green-button" href="https://mapa.stalco.pl" target="_blank">
+                            <span><i class="icon ti-angle-double-right"></i> ZNAJDŹ SKLEP W POBLIŻU</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

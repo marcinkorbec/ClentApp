@@ -1,0 +1,12 @@
+.mat-checkbox {
+    font-family: inherit;
+
+    .mat-checkbox-frame {
+        transform: scale(1.2);
+        border-width: thin;
+    }
+}
+
+.mat-checkbox-checked .mat-checkbox-background {
+    transform: scale(1.2);
+}

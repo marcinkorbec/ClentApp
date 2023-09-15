@@ -1,0 +1,22 @@
+<article>
+    <ul class="attachments-list"
+        [ngClass]="{'attachments-list--vertical': attachmentsLayoutType === 'VerticalList', 'attachments-list--horizontal': attachmentsLayoutType === 'HorizontalList'}">
+
+        <li class="attachments-list__item"
+            [ngClass]="{'attachments-list__item--vertical': attachmentsLayoutType === 'VerticalList', 'attachments-list__item--horizontal': attachmentsLayoutType === 'HorizontalList'}"
+            *ngFor="let attachment of attachments">
+            <a [href]="attachment.href" [target]="attachment.target">
+                <ng-container [ngSwitch]="attachmentsIconType">
+                    <ng-container *ngSwitchCase="'FixedClipIcons'">
+                        <i class="ti-clip"></i>
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'VariousFileIcons'">
+                        <app-file-icon [extension]="attachment.extension"></app-file-icon>
+                    </ng-container>
+                </ng-container>
+                <span>{{attachment.fullName}}</span>
+            </a>
+        </li>
+    </ul>
+</article>
+

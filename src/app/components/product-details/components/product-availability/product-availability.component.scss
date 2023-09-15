@@ -1,0 +1,15 @@
+@import 'configuration.scss';
+
+.app-product-availability {
+    .availability {
+        display: flex;
+
+        @media screen and (min-width: $laptop-min) {
+            justify-content: flex-end;
+        }
+
+        &__available-from {
+            margin-left: 16px;
+        }
+    }
+}

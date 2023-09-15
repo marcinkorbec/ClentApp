@@ -1,0 +1,18 @@
+<div class="image-wrapper" [ngStyle]="{'max-height.px': height, 'max-width.px': width}">
+
+    <app-loading *ngIf="loading"></app-loading>
+
+    <img *ngIf="imageSrc; else noPhoto"
+         class="image"
+         appLazy
+         [lazySrc]="imageSrc"
+         (load)="afterImageLoading()"
+         [alt]="alt"
+         (error)="errorWhileLoadingImage()"/>
+
+    <ng-template #noPhoto>
+        <img src="/ClientApp/assets/images/no-image.svg" style="width: 50px;height: 50px;"/>
+    </ng-template>
+</div>
+
+

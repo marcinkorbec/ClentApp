@@ -1,0 +1,40 @@
+@import 'configuration.scss';
+
+.app-product-last-order-details {
+    .last-order-details {
+        font-size: 13px;
+        border: 1px solid #d9d9d9;
+        border-top: 0;
+        padding: 10px 30px;
+
+        @media (max-width: $tablet-max) {
+            padding: 10px;
+            border-left: 0;
+            border-right: 0;
+        }
+
+        .last-order-label {
+            color: #717171;
+        }
+
+        .bag-icon-group {
+            margin-right: 20px;
+            font-size: 32px;
+        }
+
+        .small-bag-icon-group {
+            margin-right: 20px;
+            font-size: 28px;
+        }
+
+        .align-center {
+            vertical-align: middle;
+        }
+
+        .last-order-content {
+            @media (max-width: $tablet-max) {
+                width: 80%;
+            }
+        }
+    }
+}

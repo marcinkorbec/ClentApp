@@ -1,0 +1,101 @@
+<section class="variants">
+    <app-loading class="variants__loader" *ngIf="variantsLoading"></app-loading>
+    <header class="variants-header">
+        <h3 class="variants-header__heading">{{translations?.selectProductVariant}}</h3>
+        <!-- <div class="availability-wrapper"
+             [class.availability-wrapper--with-threshold]="thresholdPriceLists?.hasAnyThresholdPriceList"
+             *ngIf="applicationType === 0">
+            <app-product-availability [translations]="translations"
+                                      [details]="productBasicDetails">
+            </app-product-availability>
+        </div> -->
+    </header>
+    <article class="switch-variants">
+        <app-switch *ngFor="let model of switchControlModels" class="switch-variants__item" [data]="model"
+            (optionChanged)="onSwitchOptionChanged($event)">
+        </app-switch>
+    </article>
+    <article>
+        <app-product-expanded-variant [translations]="translations"
+            (loadPurchaseDetails)="onLoadPurchaseDetails($event)" (optionChanged)="onProductVariantChanged($event)"
+            (variantPreviewChanged)="onVariantPreviewChanged($event)" (unitChanged)="onUnitChanged($event)"
+            (warehouseChanged)="onWarehouseChanged($event)">
+        </app-product-expanded-variant>
+    </article>
+    <section class="variants-purchase">
+        <div class="variants-purchase__planned-deliveries">
+            <app-product-planned-deliveries [translations]="translations" [plannedDeliveries]="plannedDeliveries"
+                [productName]="productBaseInfo?.name"
+                [productCode]="configService?.config?.showCode && productBaseInfo?.code?.representsExistingValue ? productBaseInfo.code.value : null"
+                [hasAccessToPlannedDeliveries]="configService?.permissions?.hasAccessToPlannedDeliveries">
+            </app-product-planned-deliveries>
+        </div>
+        <div class="variants-purchase__purchase">
+            <!--PG początek-->
+            <ng-container *ngIf="productAttributesSummary?.articleAttributes?.length > 0">
+                <ng-container *ngFor="let attribute of productAttributesSummary.articleAttributes">
+                    <div style="color: red;" *ngIf="attribute.name == 'MinimumZamówieniowe'">
+                        {{ attribute.value }}
+                    </div>
+                </ng-container>
+            </ng-container>
+            <!--PG koniec-->
+            <article class="purchase">
+                <div class="purchase__store" *ngIf="configService?.permissions?.hasAccessToStore">
+                    <app-select class="choose-store" [ngModel]="stores?.length > 0 ? stores[0].id : null"
+                        #productStoreSelect="ngModel">
+
+                        <app-option *ngFor="let store of stores" [value]="store.id">
+                            {{store.name || store.id}}
+                        </app-option>
+                        <app-option [value]="-1" class="create-new-store-option">
+                            {{translations?.newStore}}
+                        </app-option>
+
+                    </app-select>
+
+                    <div class="add-to-store" (click)="onClickAddToStore(productStoreSelect?.value)">
+                        <i class="ti-clipboard"></i>
+                        <span>{{translations?.toStore}}</span>
+                    </div>
+                </div>
+                <div class="purchase__cart" *ngIf="configService?.permissions?.hasAccessToCart">
+
+                    <app-cart-select class="choose-cart" name="cartId" ngModel #productCartSelect="ngModel">
+                    </app-cart-select>
+
+                    <button class="cart add-to-cart" (click)="onClickAddToCart(productCartSelect?.value);">
+                        <i class="icon ti-shopping-cart"></i><span>{{translations?.addToCart}}</span>
+                    </button>
+                </div>
+            </article>
+            <ng-container
+                *ngIf="!configService.isMobile && thresholdPriceLists?.hasAnyThresholdPriceList && productBaseInfo">
+                <article class="variants-purchase__threshold-prices">
+                    <app-threshold-price-list [thresholdPriceLists]="thresholdPriceLists"
+                        [productName]="productBaseInfo.name" [productCode]="productBaseInfo.code.value">
+                    </app-threshold-price-list>
+                </article>
+            </ng-container>
+        </div>
+    </section>
+</section>
+<app-product-last-order-details [translations]="translations" [lastOrderDetails]="lastOrderDetails"
+    [hasAccessToPriceList]="configService?.permissions?.hasAccessToPriceList"
+    [orderRoutePath]="menuService.routePaths.orders">
+</app-product-last-order-details>
+
+<app-modal class="filter-set-notification-modal" [isOpened]="notificationModalData.isOpened"
+    [autoClose]="notificationModalData.autoClose" [autoCloseTimeout]="notificationModalData.autoCloseTimeout"
+    (close)="closeNotificationModal()">
+
+    <p class="title flex">
+        <span class="mauto" [ngSwitch]="notificationModalData.status">
+
+            <ng-container *ngSwitchCase="'NoQuantitySelected'">
+                <i class="ti-alert title__icon title__icon--alert"></i>
+                {{translations?.enterQuantityOfSelectedGoods}}
+            </ng-container>
+        </span>
+    </p>
+</app-modal>

@@ -1,0 +1,56 @@
+export class DocumentDetailsHeaderHeleper {
+
+    static propertyTranslation: Map<string, string> = new Map<string, string>()
+        .set('completionEntirely', 'completion')
+        .set('deliveryMethod', 'deliverer')
+        .set('issueData', 'issueDate')
+        .set('expectedDate', 'expectedDate')
+        .set('expireDate', 'expirationDate')
+        .set('sourceNumber', 'myNumber')
+        .set('totalWeight', 'grossWeight')
+        .set('inquiryNumber', 'fromInquiry')
+        .set('reasonForRejectionName', 'reasonForRejection')
+        .set('itemsCount', 'productsQuantity')
+        .set('deliveryMethod', 'shippingMethod');
+
+    static propertiesToRemove: Set<string> = new Set<string>()
+        .add('isExpectedDateUnspecified')
+        .add('isExpiryDateUnlimited')
+        .add('precision')
+        .add('priceMode')
+        .add('showCode')
+        .add('showDeliveryCost')
+        .add('showFeatures')
+        .add('showImages')
+        .add('vatDirection')
+        .add('description')
+        .add('issueDate')
+        .add('companyName')
+        .add('state')
+        .add('stateResourceKey')
+        .add('street')
+        .add('zipCode')
+        .add('city')
+        .add('nameAndLastName')
+        .add('number')
+        .add('applicationId')
+        .add('extensions')
+        .add('createManyOrders')
+        .add('isEditable')
+        .add('reasonForRejectionId')
+        .add('showState')
+        .add('stateAvailableColor') // to remove from backend
+        .add('stateNoneColor') // to remove from backend
+        .add('stateMode')
+        .add('inquiryId')
+        .add('canComplaint')
+        .add('currency')
+        .add('value')
+        .add('vatValue')
+        .add('copyToCartDisabled')
+        .add('isPrintingDisabled')
+        .add('weightUnit')
+        .add('isClip');
+    
+}
+

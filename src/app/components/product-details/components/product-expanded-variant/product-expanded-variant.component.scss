@@ -1,0 +1,282 @@
+@import 'configuration.scss';
+
+.app-product-expanded-variant {
+
+    .variant-table {
+        font-family: inherit;
+
+        &__loading {
+            position: absolute;
+        }
+
+        &__covering-link {
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .table-header {
+        min-height: 40px;
+
+        &__item {
+            color: inherit;
+            background: $purchase-section-bg;
+            text-align: left;
+            font-size: 0.9em;
+
+            @media screen and (min-width: $laptop-min) {
+                font-size: 1em;
+            }
+
+            &--stepper {
+                min-width: 155px;
+            }
+
+            &--stock-level {
+                flex-grow: 0.7;
+            }
+
+            &--unit {
+                max-width: 130px;
+                padding-left: 16px;
+            }
+
+            &--variant {
+                flex-grow: 0.7;
+                padding-left: 8px;
+
+                @media screen and (min-width: $laptop-min) {
+                    padding-left: 24px;
+                }
+            }
+        }
+    }
+
+    .table-row {
+        position: relative;
+        border: 1px solid $border-color;
+        align-items: flex-start;
+        min-height: fit-content;
+        text-align: left;
+
+        @media screen and (min-width: $laptop-min) {
+            align-items: baseline;
+        }
+
+        &--active {
+            border: 1px solid $primary-color;
+        }
+
+        &__cell {
+            padding: 16px 0;
+            margin-right: 2px;
+            text-align: left;
+            font-size: 1em;
+
+            &--stock-level {
+                flex-grow: 0.7;
+                font-size: 0.8em;
+            }
+
+            &--stepper {
+                position: relative;
+                z-index: 2;
+                min-width: 155px;
+
+                .app-stepper input {
+                    width: 80px;
+                    height: 37px;
+                }
+            }
+
+            &--unit {
+                overflow: visible;
+                max-width: 130px;
+                padding-left: 12px;
+            }
+
+            &--variant {
+                flex-grow: 0.7;
+                padding-left: 8px;
+                word-break: break-word;
+
+                @media screen and (min-width: $laptop-min) {
+                    padding-left: 24px;
+                }
+            }
+
+            &--quantity-unit {
+                padding-right: 8px;
+                max-width: 88px;
+                text-align: right;
+
+                .app-stepper {
+                    position: relative;
+                    z-index: 2;
+                }
+            }
+
+            &--block-prices {
+                justify-content: flex-end;
+                margin-right: 8px;
+            }
+        }
+    }
+
+    .price-cell {
+        position: relative;
+        text-align: left;
+
+        &__base-value {
+            color: $pair-key-color;
+            white-space: nowrap;
+            position: absolute;
+            right: 0;
+            font-size: 0.75em;
+
+            @media screen and (min-width: $laptop-min) {
+                left: 0;
+                right: auto;
+                font-size: small
+            }
+        }
+
+        &__converter {
+            display: block;
+            margin: 0;
+
+            @media screen and (min-width: $laptop-min) {
+                text-align: left;
+            }
+        }
+    }
+
+    .price-container {
+        word-break: break-word;
+
+        @media screen and (min-width: $laptop-min) {
+            text-align: left;
+        }
+
+        &--with-base {
+            padding-top: 18px;
+
+            @media screen and (min-width: $laptop-min) {
+                padding-top: 20px;
+            }
+        }
+
+        &__currency {
+            font-size: 0.8em;
+
+            @media screen and (min-width: $laptop-min) {
+                font-size: 1em;
+            }
+        }
+
+        &__value {
+            line-height: 1.2em;
+            margin-right: 4px;
+            text-align: left;
+
+            @media screen and (min-width: $laptop-min) {
+                font-size: 1.3em;
+                font-weight: bold;
+            }
+        }
+
+        &__label {
+            font-size: 0.65em;
+            margin-right: 2px;
+
+            @media screen and (min-width: $laptop-min) {
+                display: none;
+            }
+        }
+    }
+
+    .unit-cell {
+
+        &__converter {
+            font-size: 0.7em;
+            display: block;
+            margin: 0;
+
+            @media screen and (min-width: $laptop-min) {
+                font-size: 0.75em;
+            }
+        }
+
+        &__select {
+            width: 80px;
+
+            @media screen and (min-width: $laptop-min) {
+                width: 100px;
+            }
+
+            button {
+                min-height: 36px;
+                height: 36px;
+            }
+        }
+    }
+
+    .stock-container {
+        margin-top: 8px;
+
+        &__value {
+            font-size: 0.8em;
+            display: block;
+            line-height: 1em;
+        }
+    }
+
+    .block-prices {
+        &__net {
+            margin-bottom: 8px;
+        }
+    }
+
+    .quantity-unit {
+        &__quantity {
+            margin-bottom: 8px;
+        }
+    }
+
+    .unavailable-option {
+        height: 36px;
+        width: 100%;
+        font-size: 0.75em;
+
+        &--not-exist {
+            height: 40px;
+        }
+
+        &__icon {
+            display: none;
+        }
+
+        @media (min-width: $laptop-min) {
+            width: 155px;
+            font-size: 0.9em;
+
+            &__icon {
+                display: initial;
+            }
+        }
+    }
+
+    mat-cell {
+        justify-content: center;
+    }
+
+    mat-header-cell.mat-header-cell.cdk-header-cell.table-header__item.table-header__item--variant.cdk-column-variantValue.mat-column-variantValue{
+        padding-left: 0;
+    }
+    
+    mat-header-cell{
+        justify-content: center;
+    }
+
+}

@@ -1,0 +1,57 @@
+<div class="filters-values inner-clear">
+
+    <app-update-products-filter-set class="filters-values__item filters-values__item--filter-set"
+                                    [translations]="translations">
+    </app-update-products-filter-set>
+
+    <button class="secondary filters-values__item"
+            *ngIf="selectedFiltersSummary?.haveAnySelectedFiltersValuesToShow || (searchPhrase && searchPhrase !== '')"
+            (click)="resetAllFiltersValues()">
+        <i class="ti-close"></i> <span class="filters-values__filter-name">{{translations?.clearFilters}}</span>
+    </button>
+    <!--TODO temp ngIf searchPhrase-->
+    <button class="filters-values__item search-mark"
+            *ngIf="searchPhrase && searchPhrase !== ''"
+            (click)="resetSearchResults()">
+
+        <i class="ti-close"></i> <span class="filters-values__filter-name">
+            {{translations?.search | lowercase}}:
+        </span>
+        <strong>
+            {{searchPhrase}}
+        </strong>
+    </button>
+
+    <ng-container *ngFor="let articleGroupFilterValue of selectedFiltersSummary?.articleGroupFiltersValues">
+        <button *ngFor="let selectedValueToShow of articleGroupFilterValue?.selectedValueToShow"
+                class="secondary filters-values__item"
+                (click)="resetArticleGroupFilterValue(selectedValueToShow, articleGroupFilterValue)">
+            <i class="ti-close"></i> <span class="filters-values__filter-name">{{articleGroupFilterValue.filterName}}:
+            </span><strong>{{selectedValueToShow.translatedName}}</strong>
+        </button>
+    </ng-container>
+
+    <ng-container *ngFor="let globalFilterValue of selectedFiltersSummary?.globalFiltersValues">
+        <ng-container [ngSwitch]="globalFilterValue.filterDisplayType">
+
+            <ng-container *ngSwitchCase="'SingleChoiceList'">
+                <button *ngIf="globalFilterValue?.selectedValueToShow"
+                        class="secondary filters-values__item"
+                        (click)="resetGlobalFilterValue(globalFilterValue.selectedValueToShow, globalFilterValue)">
+                    <i class="ti-close"></i> <span class="filters-values__filter-name">{{globalFilterValue.filterName}}:
+                    </span><strong>{{globalFilterValue.selectedValueToShow.translatedName}}</strong>
+                </button>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'MultipleChoiceList'">
+                <button *ngFor="let selectedValueToShow of globalFilterValue?.selectedValueToShow"
+                        class="secondary filters-values__item"
+                        (click)="resetGlobalFilterValue(selectedValueToShow, globalFilterValue)">
+                    <i class="ti-close"></i> <span class="filters-values__filter-name">{{globalFilterValue.filterName}}:
+                    </span><strong>{{selectedValueToShow.translatedName}}</strong>
+                </button>
+            </ng-container>
+        </ng-container>
+
+    </ng-container>
+</div>

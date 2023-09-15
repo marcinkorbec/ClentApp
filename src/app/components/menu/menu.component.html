@@ -1,0 +1,611 @@
+<nav class="nav-container">
+
+    <ng-container *ngIf="menuItems && menuItems.length > 0 && r?.translations">
+
+        <ng-container *ngIf="menuItems[0]?.url === menuService.routePaths.items; else simpleItem">
+
+            <app-dropdown *ngIf="groupsAsDrop; else noDrop"
+                          class="items-drop">
+
+                <trigger class="covered menu-item {{menuItems[0].cssClass}}">
+                    <i class="navBar-item-image ti-menu {{menuItems[0].cssClass}}"></i>
+                    <p class="label tablet-hidden">{{r?.translations[menuItems[0].resourceKey]}}</p>
+                </trigger>
+
+                <content class="sidebar">
+                    <div class="groups-wrapper sticky">
+                        <app-groups *ngIf="getTreeParams?.groupId"
+                                    [groupId]="getTreeParams.groupId"
+                                    [parentId]="getTreeParams.parentId">
+                        </app-groups>
+                    </div>
+                </content>
+
+            </app-dropdown>
+
+            <ng-template #noDrop>
+
+                <button *ngIf="configService.isMobile"
+                        (click)="toggleExternalGroups.emit()"
+                        class="button menu-item {{menuItems[0].cssClass}}">
+
+                    <i class="navBar-item-image ti-menu {{menuItems[0].cssClass}}"></i>
+                </button>
+
+                <div *ngIf="!configService.isMobile"
+                     class="menu-item {{menuItems[0].cssClass}} as-sidebar-label">
+
+                    <i class="navBar-item-image ti-menu {{menuItems[0].cssClass}}"></i>
+                    <p class="label">{{r?.translations[menuItems[0].resourceKey]}}</p>
+                </div>
+            </ng-template>
+
+
+        </ng-container>
+
+        <ng-template #simpleItem>
+            <a class="menu-item button {{menuItems[0]?.cssClass}}"
+               [routerLink]="['/'+menuItems[0].url]"
+               routerLinkActive="active-top">
+
+                <i class="navBar-item-image ti-menu {{menuItems[0]?.cssClass}}"></i>
+
+                <p class="label tablet-hidden">
+                    {{r?.translations[menuItems[0]?.resourceKey]}}<span *ngIf="menuItems[0]?.params?.id">:
+                        {{menuItems[0]?.params.id}}</span>
+                </p>
+
+            </a>
+        </ng-template>
+
+    </ng-container>
+
+
+    <!-- <ng-container *ngIf="menuItems?.length > 1 && r?.translations">
+
+        <a *ngFor="let item of menuItems.slice(1)"
+           class="menu-item button {{item.cssClass}}"
+           [routerLink]="['/'+item.url]"
+           routerLinkActive="active-top">
+
+            <i class="navBar-item-image ti-menu {{item.cssClass}}"></i>
+
+            <p class="label">
+                {{r?.translations[item?.resourceKey]}}<span *ngIf="item?.params?.id">: {{item?.params?.id}}</span>
+            </p>
+
+        </a>
+
+    </ng-container>
+
+    <form class="menu-item import-csv-form"
+          *ngIf="isDefaultMenu && configService?.permissions?.hasAccessToCartImport"
+          #importCsvForm="ngForm">
+
+        <i class="navBar-item-image ti-import"></i>
+
+        <span class="label">{{r?.translations?.importToCart}}</span>
+
+        <input type="file"
+               class="import-csv-input"
+               name="csvFile"
+               accept=".csv"
+               required
+               ngModel
+               (change)="importCsv($event.target.files, importCsvForm.value.importToCartId)">
+
+        <app-cart-select class="choose-cart"
+                         name="importToCartId"
+                         ngModel>
+        </app-cart-select>
+
+    </form>
+
+    <a class="menu-item button"
+       *ngIf="isDefaultMenu && configService?.permissions?.hasAccessToCartImport"
+       (click)="downloadDefaultCsv()">
+
+        <i class="navBar-item-image ti-download"></i>
+        <p class="label">{{r?.translations?.downloadDefaultCsvFile}}</p>
+    </a> -->
+    <!-- <ng-container>
+        <a
+            class='menu-item button dropdown-menu'
+            *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+        >
+            <p class='label'>ZAMÓWIENIA</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/orders']"
+                       routerLinkActive='active-top'>
+                        - Lista zamówień
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+                       (click)='downloadDeyfaultCsv()'
+                    >
+                        - Pobierz przykładowy plik csv
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <form class='menu-item import-csv-form'
+                          *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+                          #importCsvForm='ngForm'>
+
+                        <i class='navBar-item-image ti-import'></i>
+
+                        <span class='label'>{{r?.translations?.importToCart}}</span>
+
+                        <input type='file' class='import-csv-input' name='csvFile' accept='.csv' required ngModel
+                               (change)='importCsv($event.target.files, importCsvForm.value.importToCartId)'>
+
+                        <app-cart-select
+                            class='choose-cart'
+                            name='importToCartId'
+                            ngModel>
+                        </app-cart-select>
+                    </form>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/promotions']"
+                       routerLinkActive='active-top'>
+                        - Aktywność w promocji
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/planogramyzatowarowania']"
+                       routerLinkActive='active-top'>
+                        - Planogramy zatowarowania
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/payments']"
+                       routerLinkActive='active-top'>
+                        - Płatności
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/delivery']"
+                       routerLinkActive='active-top'>
+                        - Dostawa
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a
+            *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'
+            [routerLink]="['/promocje']"
+            routerLinkActive='active-top'
+        >
+            <p class='label'>PROMOCJE</p>
+        </a>
+
+        <a
+            *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'
+        >
+            <p class='label'>MARKETING</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/katalogocennik']"
+                       routerLinkActive='active-top'>
+                        - Katalogo cennik, cennik Excel
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/katalogitechniczne']"
+                       routerLinkActive='active-top'>
+                        - Katalogi techniczne
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/nowosci']"
+                       routerLinkActive='active-top'>
+                        - Nowości (PDF)
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/kartytechniczne']"
+                       routerLinkActive='active-top'>
+                        - Karty techniczne
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/deklaracjezgodnosci']"
+                       routerLinkActive='active-top'>
+                        - Deklaracje zgodności
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/logoibrandbook']"
+                       routerLinkActive='active-top'>
+                        - Logotypy & brandbook
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/filmyiwebinary']"
+                       routerLinkActive='active-top'>
+                        - Filmy instruktażowe & webinary
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a
+            *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'
+        >
+            <p class='label'>PLANOGRAMY</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/narzedziareczne']"
+                       routerLinkActive='active-top'>
+                        - Narzędzia ręczne
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/systemyzamocowan']"
+                       routerLinkActive='active-top'>
+                        - Systemy zamocowań
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/osprzetdoelektronarzedzi']"
+                       routerLinkActive='active-top'>
+                        - Osprzęt do elektronarzędzi
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/elektronarzedzia']"
+                       routerLinkActive='active-top'>
+                        - Elektronarzędzia
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/narzedziaogrodowe']"
+                       routerLinkActive='active-top'>
+                        - Narzędzia ogrodowe
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/odziezakcesoriabhp']"
+                       routerLinkActive='active-top'>
+                        - Odzież i akcesoria BHP
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/narzedziabudowlane']"
+                       routerLinkActive='active-top'>
+                        - Narzędzia budowlane
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/akcesoriamalarskie']"
+                       routerLinkActive='active-top'>
+                        - Akcesoria malarskie
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/chemiatechnicznaibudowlana']"
+                       routerLinkActive='active-top'>
+                        - Chemia techniczna i budowlana
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a
+            *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'
+        >
+            <p class='label'>SERWIS</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/complaints']"
+                       routerLinkActive='active-top'>
+                        - Reklamacje
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/servicejobs']"
+                       routerLinkActive='active-top'>
+                        - Lista zleceń serwisowych
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a
+            *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'
+        >
+            <p class='label'>MOJE B2B</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/mydata']"
+                       routerLinkActive='active-top'>
+                        - Moje dane
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/news']"
+                       routerLinkActive='active-top'>
+                        - Aktualności
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/employees']"
+                       routerLinkActive='active-top'>
+                        - Lista pracowników
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link'
+                       [routerLink]="['/profile/payments']"
+                       routerLinkActive='active-top'>
+                        - Rozliczenia i płatności
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a
+            *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'
+            [routerLink]="['/kontakty']"
+            routerLinkActive='active-top'
+        >
+            <p class='label'>KONTAKTY</p>
+        </a>
+    </ng-container> -->
+    <ng-container>
+        <a class='menu-item button dropdown-menu'
+            *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'>
+            <p class='label'>{{r?.translations?.menuOrders | uppercase}}</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/orders']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuOrdersList}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+                        (click)='downloadDefaultCsv()'>
+                        - {{r?.translations?.menuDownloadCsv}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <form class='menu-item import-csv-form'
+                        *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+                        #importCsvForm='ngForm'>
+
+                        <i class='navBar-item-image ti-import'></i>
+
+                        <span class='label'>{{r?.translations?.importToCart}}</span>
+
+                        <input type='file' class='import-csv-input' name='csvFile' accept='.csv' required ngModel
+                            (change)='importCsv($event.target.files, importCsvForm.value.importToCartId)'>
+
+                        <app-cart-select class='choose-cart' name='importToCartId' ngModel>
+                        </app-cart-select>
+                    </form>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/promotions']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuPromotionActivity}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/planogramyzatowarowania']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuStockingPlanograms}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/payments']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuPayments}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/delivery']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuDelivery}}
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu' [routerLink]="['/promocje']" routerLinkActive='active-top'>
+            <p class='label'>{{r?.translations?.menuPromotion | uppercase}}</p>
+        </a>
+
+        <a *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'>
+            <p class='label'>{{r?.translations?.menuMarketing | uppercase}}</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/katalogocennik']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuCatalogPriceList}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/katalogitechniczne']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuTechnicalCatalogs}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/nowosci']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuNews}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/kartytechniczne']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuTechnicalCards}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/deklaracjezgodnosci']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuConformityDeclarations}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/logoibrandbook']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuLogosBrandbook}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/filmyiwebinary']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuWebinars}}
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'>
+            <p class='label'>{{r?.translations?.menuPlanograms | uppercase}}</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/narzedziareczne']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuHandTools}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/systemyzamocowan']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuMountingSystems}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/osprzetdoelektronarzedzi']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuAccessoriesPowerTools}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/elektronarzedzia']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuPowerTools}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/narzedziaogrodowe']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuGardenTools}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/odziezakcesoriabhp']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuBhp}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/narzedziabudowlane']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuConstructionTools}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/akcesoriamalarskie']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuPaintingAccessories}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/chemiatechnicznaibudowlana']"
+                        routerLinkActive='active-top'>
+                        - {{r?.translations?.menuChemistry}}
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'>
+            <p class='label'>{{r?.translations?.menuService | uppercase}}</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/complaints']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuComplaints}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/servicejobs']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuServiceOrdersList}}
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu'>
+            <p class='label'>{{r?.translations?.menuMyB2B | uppercase}}</p>
+            <ul class='dropdown-list'>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/news']" routerLinkActive='active-top'>
+                        - {{r?.translations?.news}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/mydata']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuMyData}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/employees']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuEmployees}}
+                    </a>
+                </li>
+                <li class='dropdown-list_element'>
+                    <a class='dropdown-link' [routerLink]="['/profile/payments']" routerLinkActive='active-top'>
+                        - {{r?.translations?.menuSettlementsPayments}}
+                    </a>
+                </li>
+            </ul>
+        </a>
+
+        <a *ngIf='isDefaultMenu && configService?.permissions?.hasAccessToCartImport'
+            class='menu-item button dropdown-menu' [routerLink]="['/kontakty']" routerLinkActive='active-top'>
+            <p class='label'>{{r?.translations?.menuContacts | uppercase}}</p>
+        </a>
+    </ng-container>
+    <!--ng-content służy do wyświetlania okienka do logowania-->
+    <ng-content></ng-content>
+
+</nav>
+
+
+<app-modal class="import-csv-modal"
+           *ngIf="!router?.url?.includes(menuService.routePaths.fileImportResult) && isDefaultMenu && configService?.permissions?.hasAccessToCart && configService?.permissions?.hasAccessToArticleList"
+           [isOpened]="!!menuService?.cartImportedResponse"
+           [autoClose]="false"
+           (close)="closeImportResponseModal()">
+
+    <app-import-cart-results [cartId]="importCsvForm?.value?.importToCartId"
+                             (closeMiddleware)="closeImportResponseModal()">
+
+    </app-import-cart-results>
+</app-modal>

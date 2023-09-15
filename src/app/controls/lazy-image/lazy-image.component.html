@@ -1,0 +1,8 @@
+<app-loading *ngIf="loading"></app-loading>
+
+<img [hidden]="isError" *ngIf="src" appLazy lazySrc="{{src}}" (load)="removeLoading()" alt="{{alt}}"
+    (error)="handleError()" />
+<!--PG zmiany p-->
+<img *ngIf="isError" src="/ClientApp/assets/images/no-image.svg" style="width: 95%;height: 100%;" />
+<!-- <i *ngIf="isError" class="ti-image no-photo"></i> -->
+<!--PG zmiany k-->

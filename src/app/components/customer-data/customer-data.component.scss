@@ -1,0 +1,138 @@
+@import 'configuration.scss';
+
+.app-customer-data {
+
+    p {
+        margin: 0;
+        padding: 5px 0;
+    }
+
+    .profile-container {
+
+        .employees {
+
+            @media (max-width: $tablet-max) {
+                margin: 0;
+                padding-top: 30px;
+            }
+        }
+
+        .flex {
+            @media (max-width: $tablet-max) {
+                flex-direction: column;
+            }
+        }
+
+        .my-data {
+            display: flex;
+            flex-flow: wrap;
+
+            @media (max-width: $tablet-max) {
+                margin: 0;
+            }
+        }
+
+        .my-data-wrapper {
+            @media (max-width: $tablet-max) {
+                margin-top: 8px;
+            }
+        }
+
+        .shipping-adresses {
+            margin-top: 32px;
+            position: relative;
+
+            .overlay {
+                position: absolute;
+            }
+        }
+    }
+
+
+
+    .box, .section-title {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+
+    .box {
+        min-width: calc(33.333% - 30px);
+
+        @media (max-width: $tablet-max) {
+            margin: 0;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+
+        .label {
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+
+        i {
+            padding-right: 5px;
+
+            &.ti-desktop, &.ti-email, &.ti-skype {
+                padding-right: 7px;
+            }
+        }
+    }
+
+    .tel {
+        margin-right: 10px;
+    }
+
+    .add-address-dropdown {
+        .trigger-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            @media (max-width: $tablet-max) {
+                font-size: 1.2em;
+            }
+        }
+
+        input {
+            margin: 0;
+
+            @media (max-width: $tablet-max) {
+                padding: 6px;
+                margin: 0;
+                max-width: 100%;
+                font-size: inherit;
+            }
+        }
+
+        .dropdown-window {
+            padding: 0;
+            text-align: left;
+            min-width: 425px;
+            font-size: 0.85em;
+            margin-left: -1px;
+            cursor: default;
+            overflow: unset;
+
+            @media (max-width: $tablet-max) {
+                margin-left: 0px;
+                min-width: 100%;
+                overflow: auto;
+            }
+
+            .close {
+                border: none;
+            }
+        }
+    }
+
+    .box-message {
+        margin-bottom: 32px;
+    }
+
+    h2 {
+        @media (max-width: $tablet-max) {
+            font-size: 1.2em;
+        }
+    }
+}

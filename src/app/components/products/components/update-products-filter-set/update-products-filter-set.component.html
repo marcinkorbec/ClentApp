@@ -1,0 +1,60 @@
+<ng-container [ngSwitch]="saveFilterViewType">
+    <ng-container *ngSwitchCase="'SaveButton'">
+        <button class="outline filter-button"
+                (click)="openSaveFilterSetForm()">
+            <mat-icon class="filter-button__icon">star_outline</mat-icon>
+            <span class="filter-button__name">{{translations?.saveFilters}}</span>
+        </button>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'ActiveButton'">
+        <button class="outline filter-button"
+                (click)="openChangeFilterSetnameForm()">
+            <mat-icon class="filter-button__icon filter-button__icon--active">star</mat-icon>
+            <span
+                  class="filter-button__name filter-button__name--active">{{selectedFiltersSummary?.activeFilterSet?.filterSetName}}</span>
+        </button>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'SaveFilterSetForm'">
+        <ng-container
+                      *ngTemplateOutlet="saveForm; context: {currentFilterSetName: '', label: translations?.nameForSavingFilters}">
+        </ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'ChangeFitlerSetName'">
+        <ng-container
+                      *ngTemplateOutlet="saveForm; context: {currentFilterSetName: selectedFiltersSummary?.activeFilterSet?.filterSetName, label: 'Nowa nazwa dla zapisanych filtrów'}">
+        </ng-container>
+    </ng-container>
+
+    <ng-template #saveForm let-currentFilterSetName="currentFilterSetName" let-label="label">
+        <form class="save-form"
+              #filterSetNameForm="ngForm">
+            <i class="ti-save save-form__icon save-form__icon--save"
+               (click)="onClickSave(filterSetNameInput.value, saveFilterViewType, selectedFiltersSummary)"></i>
+            <div class="save-form__input-group">
+                <app-floating-label-input class="save-form__input"
+                                          type="text"
+                                          name="newFilterSetName"
+                                          [ngModel]="currentFilterSetName"
+                                          [required]="true"
+                                          [maxlength]="maxFitlerSetNameLength"
+                                          (keyup.enter)="onClickSave(filterSetNameInput.value, saveFilterViewType, selectedFiltersSummary)"
+                                          #filterSetNameInput="ngModel">
+
+                    {{label}}
+
+                </app-floating-label-input>
+                <p class="save-form__error"
+                   *ngIf="!filterSetNameForm.controls['newFilterSetName']?.valid && filterSetNameForm.controls['newFilterSetName']?.dirty">
+                    {{translations?.nameIsRequired}}</p>
+            </div>
+
+            <i class="ti-close save-form__icon save-form__icon--close"
+               (click)="cancelSaveFilterForm()"></i>
+        </form>
+    </ng-template>
+
+    <ng-container *ngSwitchDefault></ng-container>
+</ng-container>

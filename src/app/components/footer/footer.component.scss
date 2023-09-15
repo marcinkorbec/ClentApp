@@ -1,0 +1,302 @@
+@import 'configuration.scss';
+
+.app-footer {
+    display: block;
+    clear: both;
+    //background: #006547;
+    //background: #990000;
+    color: $fcolor-for-primary;
+    //padding: 20px 0;
+    height: $footer-height;
+    //margin-top: 40px;
+    //z-index: 1;
+
+    @media (max-width: $tablet-max) {
+        font-size: 14px;
+        //padding: 10px 0;
+    }
+
+    &.main-column {
+        // left: $sidebars-width;
+        // position: absolute;
+        // right: 0;
+        // bottom: 0;
+        width: 100%;
+        margin-top: 0;
+
+        @media (max-width: $tablet-max) {
+            position: static;
+        }
+    }
+
+    &.with-offline-msg {
+        bottom: $offline-message-height;
+    }
+
+    a {
+        color: inherit !important;
+    }
+}
+
+.app-account+.app-footer {
+    z-index: 10;
+}
+
+.footer {
+    background-color: rgb(245, 245, 245);
+    border: 2px solid rgb(230, 228, 228);
+    //margin: 0 1%;
+    color: black;
+
+    h3 {
+        font-size: 1.25em;
+        font-weight: bold;
+        margin-bottom: 0.5em;
+    }
+
+    &-newsletter {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 1em 2em;
+        width: 95%;
+        margin: 0 auto;
+
+        @media (max-width: $tablet-max) {
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            align-content: center;
+        }
+
+        .left {
+            display: flex;
+            flex-direction: row;
+            width: 60%;
+            align-items: center;
+            justify-content: flex-start;
+
+            h3 {
+                font-style: italic;
+                font-weight: bold;
+            }
+
+            &-img {
+                width: 250px;
+                padding: 1.75em 2.5em 1.75em 0.75em;
+
+                @media (max-width: $tablet-max) {
+                    display: none;
+                }
+            }
+
+            @media (max-width: $tablet-max) {
+                margin-bottom: 1em;
+                width: 100%;
+                justify-content: center;
+            }
+
+            &-paragraph {
+                width: 70%;
+
+                @media (max-width: $tablet-max) {
+                    width: 100%;
+                }
+            }
+        }
+
+        .right {
+            width: 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .sign-up {
+                display: flex;
+                align-content: center;
+                //margin-left: 1em;
+                //margin-bottom: 0.5em;
+
+                input {
+                    width: 60%;
+                    min-width: 260px;
+                }
+
+                button {
+                    height: 40px;
+                }
+
+                @media (max-width: $tablet-max) {
+                    justify-content: center;
+                }
+            }
+
+            .agreement {
+                &-checkbox {
+                    display: flex;
+                    margin-bottom: 2px;
+                }
+
+                input {
+                    width: 14px;
+                    height: 14px;
+                }
+
+                span {
+                    font-size: .6em;
+                }
+            }
+
+            @media (max-width: $tablet-max) {
+                margin-bottom: 1em;
+                width: 100%;
+            }
+        }
+    }
+
+    &-media {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1em calc(2em + 3%);
+        background-color: rgb(248, 248, 248);
+
+        @media (max-width: $tablet-max) {
+            flex-direction: column;
+            padding: 1em 2em;
+        }
+
+        &-left {
+            color: $primary-color;
+            font-size: 2em;
+            font-style: italic;
+
+            @media (max-width: $tablet-max) {
+                margin-bottom: 1em;
+            }
+        }
+
+        &-right {
+            display: flex;
+            flex-direction: row;
+
+            span {
+                font-size: 1.25em;
+            }
+
+            .media-icon {
+                width: 30px;
+                height: 30px;
+                margin: 0 .5em;
+            }
+        }
+    }
+
+    &-categories {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 2em;
+        width: 95%;
+        margin: 0 auto;
+
+        @media (max-width: $tablet-max) {
+            width: 100%;
+            justify-content: space-around;
+        }
+
+        .column {
+            font-size: 0.75em;
+            margin-bottom: .5em;
+            padding: 0.75em;
+
+            .icon {
+                color: $primary-color;
+            }
+
+            a {
+                span {
+                    color: black !important;
+                }
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+
+    .company-rights {
+        color: rgb(90, 90, 90);
+        text-align: center;
+        padding-bottom: 1em;
+    }
+
+    a.btn {
+        font: inherit;
+        background: #006547;
+        color: #fff !important;
+        border: 1px solid #006547;
+        display: inline-block;
+        border-radius: 2%;
+        text-align: center;
+        cursor: pointer;
+        transition-duration: 200ms;
+        transition-property: background-color, color, border-color;
+        padding: .5em 0.7em;
+        display: flex;
+        align-items: center;
+
+        span {
+            //padding: 0 1em;
+        }
+
+        i,
+        span {
+            color: white !important;
+            ;
+        }
+
+        &:hover {
+            background-color: #00845c;
+        }
+    }
+
+    a.green-button {
+        //background-image: url('/ClientApp/assets/images/buttons/button-green.svg');
+        //background-size: auto;
+        //background-repeat: no-repeat;
+        //border: none;
+        background-color: #006547;
+        transition: ease-in-out all 0.2s;
+        //margin-left: 5px;
+        width: fit-content;
+
+        span {
+            //padding: 5px 10px;
+            font-weight: 400;
+        }
+
+
+        &:hover {
+            background-color: #078f66;
+            opacity: 0.9;
+        }
+    }
+}
+
+.footer-logout {
+    background-color: rgb(245, 245, 245);
+    border: 2px solid rgb(230, 228, 228);
+    //margin: 0 1%;
+    color: black;
+
+    .company-rights {
+        color: rgb(90, 90, 90);
+        text-align: center;
+        padding: 1em 0;
+    }
+}

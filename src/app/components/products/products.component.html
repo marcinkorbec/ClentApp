@@ -1,0 +1,570 @@
+<style>
+    .sidebar + * {
+        padding-bottom: 60px !important;
+    }
+</style>
+<app-menu [groupsAsDrop]="false" (toggleExternalGroups)="handleVisibility('groups')"></app-menu>
+
+<div class="sidebar">
+    <div class="sticky">
+
+        <div class="groups-wrapper" [ngClass]="{'tablet-hidden': !groupsOpened}">
+
+            <button class="ti-close close" (click)="handleVisibility('groups', false)"></button>
+
+            <app-groups *ngIf="groupId !== undefined"
+                [groupId]="!forbiddenGroup ? currentTreeParameters.groupId : forbiddenGroupRedirect?.groupId"
+                [parentId]="currentTreeParameters.parentId" [isProductsPage]="true">
+            </app-groups>
+
+        </div>
+
+        <div class="filters-wrapper">
+            <app-products-filters [translations]="r?.translations" [isMobile]="configService.isMobile"
+                (filtersValuesChanged)="onFiltersValuesChanged($event)"
+                (allFiltersValuesCleared)="onAllFiltersValuesCleared($event)"
+                (deletefilterSetClicked)="onClickDeleteFilterSet($event)"
+                (savefilterSetClicked)="onSaveFilterSet($event)"
+                (changeFilterSetNameClicked)="onChangeFilterSetName($event)">
+            </app-products-filters>
+        </div>
+    </div>
+</div>
+
+
+<div class="content products-list">
+    <header class="products-list-header">
+        <div class="products-list-header__main">
+            <div class="products-list-header__breadcrumbs site-map">
+                <ng-container *ngIf="breadcrumbs?.length > 1 && groupId !== 0">
+                    <a [routerLink]="menuService.routePaths.home" class="pure breadcrumb inline-block ti-home"></a>
+
+                    <div class="pure breadcrumb inline-block"
+                        *ngFor="let item of breadcrumbs.slice(1, breadcrumbs.length - 1); let i = index">
+
+                        <i class="ti-angle-right separator"></i>
+                        <button class="pure" [routerLink]="[menuService.routePaths.items, item.id]"
+                            [queryParams]="{parent: breadcrumbs[i].id}">
+                            <!--PG zmiana p-->
+                            <ng-container *ngIf="item.name.indexOf('_') !== -1; then splitProd; else normalProd"></ng-container>
+                            <ng-template #splitProd>
+                                {{(item.name | splitPipe: "_")[1] }}
+                            </ng-template>
+                            <ng-template #normalProd>
+                                {{item.name}}
+                            </ng-template>
+                            <!--PG zmiana k-->
+                        </button>
+                    </div>
+                    <div class="pure breadcrumb inline-block" *ngIf="breadcrumbs[breadcrumbs.length - 1]">
+
+                        <i class="ti-angle-right separator"></i>
+                        <!--PG zmiana p-->
+                        <ng-container *ngIf="breadcrumbs[breadcrumbs.length-1].name.indexOf('_') !== -1; then splitProd; else normalProd"></ng-container>
+                        <ng-template #splitProd>
+                            {{(breadcrumbs[breadcrumbs.length-1].name | splitPipe: "_")[1] }}
+                        </ng-template>
+                        <ng-template #normalProd>
+                            {{breadcrumbs[breadcrumbs.length-1].name}}
+                        </ng-template>
+                        <!--PG zmiana k-->
+                    </div>
+                </ng-container>
+            </div>
+
+            <div class="products-list-header__actions">
+
+                <div *ngIf="productsList?.productsLength > 0">
+                    <button class="view-type 0"
+                        [ngClass]="{'active': productsList.config.displayType === 0, 'outline': configService.isMobile, 'secondary': !configService.isMobile}"
+                        (click)="productsList.changeView(0)">
+                        <i class="ti-view-list"></i>
+                    </button>
+
+                    <button class="view-type secondary 1"
+                        [ngClass]="{'active': productsList.config.displayType === 1, 'outline': configService.isMobile, 'secondary': !configService.isMobile}"
+                        (click)="productsList.changeView(1)">
+                        <i class="ti-view-list-alt"></i>
+                    </button>
+
+                    <button class="view-type secondary 2 tablet-hidden"
+                        [ngClass]="{'active': productsList.config.displayType === 2, 'outline': configService.isMobile, 'secondary': !configService.isMobile}"
+                        (click)="productsList.changeView(2)">
+                        <i class="ti-view-grid"></i>
+                    </button>
+                </div>
+
+                <ng-container *ngIf="!message">
+                    <app-products-sorting class="sorting-wrapper" [translations]="r?.translations"
+                        (sortingModeChanged)="onSortingModeChanged($event)">
+                    </app-products-sorting>
+
+                </ng-container>
+
+                <button class="outline filters-button" (click)="openFiltersDialog()" *ngIf="haveAnyFilters">
+                    <i class="ti-filter"></i>
+                    {{r?.translations?.filter}}
+                </button>
+            </div>
+        </div>
+
+        <div class="products-list-header__filters-values"
+            [class.products-list-header__filters-values--available]="haveAnySelectedFiltersValuesToShow">
+            <app-product-filters-values [translations]="r?.translations" [isMobile]="configService.isMobile"
+                [searchPhrase]="productsList.searchPhrase" (searchResultCleared)="resetSearchFilter()">
+            </app-product-filters-values>
+        </div>
+
+    </header>
+
+    <!--Bannery-->
+    <!-- <div class="banner-wrapper">
+        <a href="https://b2b.stalco.pl/items/30?parent=0" class="banner-link">
+            <img class="banner-image" src="/ClientApp/assets/images/baner/stalco.png" alt="banner-stalco" />
+        </a>
+        <a href="https://b2b.stalco.pl/items/14604?parent=0" class="banner-link">
+            <img class="banner-image" src="/ClientApp/assets/images/baner/sperfect.png" alt="banner-sperfect" />
+        </a>
+        <a href="https://b2b.stalco.pl/items/23448?parent=0" class="banner-link-garden">
+            <img class="banner-image" src="/ClientApp/assets/images/baner/stalco-garden.png"
+                alt="banner-stalco-garden" />
+        </a>
+    </div> -->
+
+    <div class="no-results box-message" *ngIf="message">
+        <i class="ti-na"></i>
+        <span>{{message}}</span>
+    </div>
+
+    <div class="list-container display-type-{{productsList?.config?.displayType}}"
+        *ngIf="productsList?.productsLength > 0">
+
+        <div class="thead sticky" *ngIf="productsList.config.displayType === 0" style="height: 50px">
+
+            <div class="item-info name">
+                {{r?.translations?.codeName}}
+            </div>
+			<div class="item-info ean">
+                {{r?.translations?.ean}}
+            </div>
+            <div class="item-info subtotal-price"
+                *ngIf="configService?.permissions?.hasAccessToPriceList && configService?.config?.priceMode !== 1">
+                {{r?.translations?.netPrice}}
+            </div>
+
+            <div class="item-info total-price"
+                *ngIf="configService?.permissions?.hasAccessToPriceList && configService?.config?.priceMode !== 0">
+                {{r?.translations?.grossPrice}}
+            </div>
+
+            <div class="item-info stock" *ngIf="configService?.config?.showState">
+                {{r?.translations?.inStock}}
+            </div>
+
+
+            <form class="item-info add-column to-cart flex" #addManyForm="ngForm" novalidate name="addManyForm"
+                (ngSubmit)="addManyToCart(addManyForm.value.cartId)">
+
+                <ng-container *ngIf="configService?.permissions?.hasAccessToCart">
+                    <app-cart-select name="cartId" ngModel [disabled]="!configService?.isOnline">
+                    </app-cart-select>
+
+                    <button class="cart add-to-cart" [disabled]="!configService?.isOnline">
+                        <i class="icon ti-shopping-cart"></i><span>{{r?.translations?.addToCart}}</span>
+                    </button>
+                </ng-container>
+            </form>
+
+
+        </div>
+
+        <ul class="pure">
+
+            <li class="list-item item-row inner-clear"
+                *ngFor="let productKeyValuePair of productsList.products | keyvalue : sortArticleList; trackBy: trackByFn;"
+                [ngClass]="{'with-flags': productKeyValuePair?.value?.flag,
+                'with-threshold': configService?.isMobile && productKeyValuePair?.value?.thresholdPriceLists?.hasAnyThresholdPriceList && productKeyValuePair?.value?.articleDetailsType === 'NotContainVariants',
+                'with-converter': productKeyValuePair?.value?.converter,
+                'small': productsList?.config?.displayType === 0,
+                'loader-before': !(productKeyValuePair?.value?.pricesLoaded && productKeyValuePair?.value?.unitsLoaded)}"
+                appLazy (lazyAction)="getArticleFromList(productKeyValuePair?.value?.id);"
+                [attr.data-no-discount]="showUnacceptableDiscounts && productKeyValuePair?.value?.discountAllowed === false ? r.translations?.noDiscount : null">
+
+                <ng-container *ngIf="productKeyValuePair?.value; let product">
+                    <a class="covering-link" *ngIf="!product.noLink"
+                        [routerLink]="[menuService.routePaths.itemDetails, product.id]"
+                        [queryParams]="{group: groupId}"></a>
+
+                    <ng-container *ngIf="product?.articleDetailsType === 'NotContainVariants'">
+                        <div class="threshold-price-list" *ngIf="configService?.isMobile"
+                            [ngClass]="{'with-flags': product.flag}">
+                            <app-threshold-price-list *ngIf="product?.thresholdPriceLists?.hasAnyThresholdPriceList"
+                                [thresholdPriceLists]="product.thresholdPriceLists" [productName]="product.name"
+                                [productCode]="product.code">
+                            </app-threshold-price-list>
+                        </div>
+                    </ng-container>
+
+                    <div class="item-info name"
+                        [ngClass]="{'with-threshold': configService?.isMobile && product.thresholdPriceLists?.hasAnyThresholdPriceList && product?.articleDetailsType === 'NotContainVariants'}">
+
+                        <p class="emphasised product-name"
+                            *ngIf="productsList.searchPhrase !== undefined && productsList.searchPhrase === ''">
+                            {{product.name}}
+                        </p>
+
+                        <p class="emphasised product-name"
+                            *ngIf="productsList.searchPhrase !== undefined && productsList.searchPhrase !== ''"
+                            [innerHTML]="product.name | highlight: productsList.searchPhrase">
+                        </p>
+
+                        <p class="product-code" *ngIf="configService?.config?.showCode">{{product.code}}</p>
+
+                        <div *ngIf="productsList.config.displayType !== 0" class="image-container">
+
+                            <app-product-flags [value]="product.flag" [amount]="3"></app-product-flags>
+
+                            <app-image
+                                [ngClass]="{'with-flags-threshold': configService?.isMobile && product.flag && product.thresholdPriceLists?.hasAnyThresholdPriceList}"
+                                [alt]="product.name" [height]="product.imageHeight" [width]="product.imageWidth"
+                                [imageData]="product.image">
+                            </app-image>
+                        </div>
+                        <!-- <app-api-extensions [data]="product?.extensions?.extendedItemsList"></app-api-extensions> -->
+                    </div>
+
+                    <!--PG zmiana-->
+                    <ng-container *ngFor="let el of product?.extensions?.extendedItemsList | keyvalue" >
+                        <ng-container *ngTemplateOutlet="loopElement; context:el"></ng-container>
+                    </ng-container>
+					<div class ="item-info ean">
+						<span class="pair-key" *ngIf="productsList.config.displayType !==0">{{r?.translations?.ean}}</span>
+                        <ng-container *ngFor="let el of product?.extensions?.extendedItemsList | keyvalue" >
+                            <ng-container *ngIf="el.key === '_EAN'">
+                                {{el.value}}
+                            </ng-container>
+                        </ng-container>
+					</div>
+                    <!--PG zmiana-->
+                    <div class="item-info subtotal-price"
+                        *ngIf="configService?.permissions?.hasAccessToPriceList && configService?.config?.priceMode !== 1"
+                        [ngClass]="{'with-converter': product.converter,
+                         'with-threshold': configService?.isMobile && product.thresholdPriceLists?.hasAnyThresholdPriceList && product?.articleDetailsType === 'NotContainVariants'}">
+
+                        <s class="pair-key basic-price" *ngIf="product.netPrice < product.baseNetPrice">
+                            {{ product.baseNetPrice | toPrice }} {{product.currency}}
+                        </s>
+
+                        <small class="brutto-netto" *ngIf="product.netPrice"
+                            [ngClass]="{'tablet-inline-block': productsList.config.displayType === 0}">
+                            {{r?.translations?.net}}
+                        </small>
+
+                        <span class="net">{{product.netPrice | toPrice}} {{product.currency}}</span>
+
+                        <span class="pair-key basic-price" *ngIf="product.showUnitNetPrice">
+                            {{ product.unitNetPrice | toPrice }} {{product.currency}}/{{product.basicUnit}}
+                        </span>
+
+                    </div>
+
+                    <div class="item-info total-price"
+                        [ngClass]="{'with-threshold': configService?.isMobile && product.thresholdPriceLists?.hasAnyThresholdPriceList && product?.articleDetailsType === 'NotContainVariants'}"
+                        *ngIf="configService?.permissions?.hasAccessToPriceList && configService?.config?.priceMode !== 0">
+
+                        <s class="pair-key basic-price" *ngIf="product.grossPrice < product.baseGrossPrice">
+                            {{ product.baseGrossPrice | toPrice }} {{product.currency}}
+                        </s>
+
+                        <small class="brutto-netto" *ngIf="product.grossPrice"
+                            [ngClass]="{'tablet-inline-block': productsList.config.displayType === 0}">
+                            {{r?.translations?.gross}}
+                        </small>
+
+                        {{product.grossPrice | toPrice}} {{product.currency}}
+
+
+                        <span class="pair-key basic-price" *ngIf="product.showUnitGrossPrice">
+                            {{product.unitGrossPrice | toPrice }} {{product.currency}}/{{product.basicUnit}}
+                        </span>
+
+                    </div>
+
+                    <ng-container *ngIf="product?.articleDetailsType === 'NotContainVariants'">
+                        <div class="item-info threshold-price-list"
+                            *ngIf="product?.thresholdPriceLists?.hasAnyThresholdPriceList && productsList?.config?.displayType !== 0 && !configService?.isMobile">
+                            <app-threshold-price-list [thresholdPriceLists]="product.thresholdPriceLists"
+                                [productName]="product.name" [productCode]="product.code">
+                            </app-threshold-price-list>
+                        </div>
+                    </ng-container>
+
+                    <!-- <div class="item-info stock"
+                         *ngIf="configService?.config?.showState && product?.type !== 3 && product?.type !== 4 && product?.type !== 6">
+
+                        <span class="pair-key"
+                              *ngIf="product.stockLevel"
+                              [ngClass]="{'tablet-block': productsList.config.displayType === 0}">{{r?.translations?.inStock}}:</span>
+
+                        <ng-container *ngIf="configService?.config?.stateMode === true">
+                            {{product?.stockLevel}}
+                        </ng-container>
+
+                        <ng-container
+                                      *ngIf="configService?.config?.stateMode === false && product.stockLevelNumber > 0">
+                            {{r?.translations?.available }}
+                        </ng-container>
+
+                        <ng-container
+                                      *ngIf="configService?.config?.stateMode === false && product.stockLevelNumber === 0">
+                            {{r?.translations?.none }}
+                        </ng-container>
+
+                    </div> -->
+                    <!--PG ukrycie stanu w magazynie gdy produkt z watiantami-->
+                    <ng-container *ngIf="product.articleDetailsType === 'NotContainVariants'">
+                        <div class="item-info stock"
+                            *ngIf="configService?.config?.showState && product?.type !== 3 && product?.type !== 4 && product?.type !== 6">
+                            <span class="pair-key" *ngIf="product.stockLevel"
+                                [ngClass]="{'tablet-block': productsList.config.displayType === 0}">{{r?.translations?.inStock}}:</span>
+                            <ng-container
+                                *ngIf="configService?.config?.stateMode === true && product.stockLevelNumber > 99">
+                                dużo <img src="/ClientApp/assets/images/availability/qty_max.png">
+                            </ng-container>
+                            <ng-container
+                                *ngIf="configService?.config?.stateMode === true  && product.stockLevelNumber > 49 && product.stockLevelNumber < 100">
+                                średnio <img src="/ClientApp/assets/images/availability/qty_med.png">
+                            </ng-container>
+                            <ng-container
+                                *ngIf="configService?.config?.stateMode === true && product.stockLevelNumber > 9 && product.stockLevelNumber < 50">
+                                mało <img src="/ClientApp/assets/images/availability/qty_low.png">
+                            </ng-container>
+                            <ng-container
+                                *ngIf="configService?.config?.stateMode === true && product.stockLevelNumber > 4 && product.stockLevelNumber < 10">
+                                poniżej 10 <img src="/ClientApp/assets/images/availability/qty_low.png">
+                            </ng-container>
+                            <ng-container
+                                *ngIf="configService?.config?.stateMode === true && product.stockLevelNumber > 0 && product.stockLevelNumber < 5">
+                                poniżej 5 <img src="/ClientApp/assets/images/availability/qty_low.png">
+                            </ng-container>
+                            <ng-container
+                                *ngIf="configService?.config?.stateMode === true && product.stockLevelNumber === 0">
+                                brak <img src="/ClientApp/assets/images/availability/qty_tel.png">
+                            </ng-container>
+                        </div>
+                    </ng-container>
+
+                    <div class="item-info add-column flex flex-wrap" [ngStyle]="{'justify-content':(product.articleDetailsType === 'ContainsVariants')?'flex-end':'normal'}">
+                        <ng-container *ngIf="product.articleDetailsType === 'NotContainVariants'">
+
+                            <span class="block converter" *ngIf="product.converter"
+                                [ngClass]="{'with-unavailable': product.status === 'NotAvailable'}">
+                                {{product.converter}}
+                            </span>
+
+                            <div class="amount-section"
+                                [ngClass]="{'mlauto': !configService?.permissions?.hasAccessToCart}">
+                                <div>
+                                    <app-stepper
+                                        *ngIf="configService?.permissions?.hasAccessToCart && product.status !== 'NotAvailable'"
+                                        [ngClass]="{'responsive': productsList?.config?.displayType === 0}"
+                                        [min]="product.min" [value]="product.quantity"
+                                        [disabled]="!configService?.isOnline" [isUnitTotal]="product.isUnitTotal"
+                                        (changeValue)="productsList.changeQuantity(product.id, $event)">
+                                    </app-stepper>
+                                    <!--PG zmiana-->
+                                    <small style="display: block; margin-bottom: -6px; color: red;">
+                                        <ng-container *ngFor="let el of product?.extensions?.extendedItemsList | keyvalue" >
+                                            <ng-container *ngIf="el.key === '_MinZam'">
+                                                {{el.value}}
+                                            </ng-container>
+                                        </ng-container>
+                                    </small>
+                                    <!--PG koniec-->
+                                </div>
+                                <div class="unavailable-option"
+                                    *ngIf="product.status === 'NotAvailable' && product.itemExistsInCurrentPriceList">
+                                    <i class="unavailable-option__icon ti-na"></i>
+                                    <span
+                                        class="unavailable-option__text">{{r?.translations?.articleStateUnavailable}}</span>
+                                </div>
+
+                                <div class="unavailable-option"
+                                    *ngIf="product.status === 'NotAvailable' && !product.itemExistsInCurrentPriceList">
+                                    <span class="unavailable-option__text">{{r?.translations?.notInPriceList}}</span>
+                                </div>
+
+                                <ng-container *ngIf="product?.units?.size > 0">
+                                    <span class="one-unit" *ngIf="product?.units?.size === 1"
+                                        [ngClass]="{'mlauto': !configService?.permissions?.hasAccessToCart}">
+                                        {{product?.unit}}
+                                    </span>
+
+
+                                    <app-select *ngIf="product?.units?.size > 1" class="unit"
+                                        [name]="'product-' + product.id" [(ngModel)]="product.unitId"
+                                        [disabled]="product.unitLockChange" (changeValue)="unitConverter(product.id);">
+
+                                        <app-option *ngFor="let el of product.units | iterableToArray" [value]="el[0]">
+
+                                            {{el[1].unit}}
+
+                                        </app-option>
+                                    </app-select>
+
+                                </ng-container>
+
+                            </div>
+
+                            <app-threshold-price-list
+                                *ngIf="product?.thresholdPriceLists?.hasAnyThresholdPriceList && productsList?.config?.displayType === 0 && !configService?.isMobile"
+                                [thresholdPriceLists]="product.thresholdPriceLists" [productName]="product.name"
+                                [productCode]="product.code">
+                            </app-threshold-price-list>
+
+                            <div class="to-cart flex"
+                                *ngIf="configService?.permissions?.hasAccessToCart && productsList?.config?.displayType !== 0 && product.status !== 'NotAvailable'">
+
+                                <app-cart-select class="choose-cart" name="cartId" [(ngModel)]="product.cartId"
+                                    [disabled]="!configService?.isOnline">
+                                </app-cart-select>
+
+                                <button class="cart add-to-cart" (click)="addToCart(product);"
+                                    [disabled]="!configService?.isOnline">
+                                    <i class="icon ti-shopping-cart"></i><span>{{r?.translations?.addToCart}}</span>
+                                </button>
+
+                            </div>
+                        </ng-container>
+                        <!--PG zmiana-->
+                        <div class="variants-container" *ngIf="product.articleDetailsType === 'ContainsVariants'">
+
+                                <small style="color: red;">
+                                    <ng-container *ngFor="let el of product?.extensions?.extendedItemsList | keyvalue" >
+                                        <ng-container *ngIf="el.key === '_MinZam'">
+                                            {{el.value}}
+                                        </ng-container>
+                                    </ng-container>
+                                </small>
+
+                                <article class="select-variants">
+                                    <i class="ti-layers select-variants__icon"></i>
+                                    <span class="select-variants__text">{{r?.translations?.selectProductVariant}}</span>
+                                </article>
+                        </div>
+                        <!--PG koniec-->
+                    </div>
+                </ng-container>
+
+            </li>
+        </ul>
+    </div>
+
+
+    <app-pager *ngIf="productsList?.pagination?.buildPager" [currentPage]="productsList.pagination.currentPage"
+        [totalPages]="productsList.pagination.totalPages" (changePage)="changePage($event);">
+    </app-pager>
+    <!--Legenda dostępności-->
+    <div class="availability-legend">
+        <div class="availability-legend-element">
+            <img src="/ClientApp/assets/images/availability/qty_max.png"> <br>
+            produkt <br>
+            dostępny
+        </div>
+        <div class="availability-legend-element">
+            <img src="/ClientApp/assets/images/availability/qty_med.png"> <br>
+            średnia ilość, duże zamówienia
+            <br>
+            mogą zostać ograniczone
+        </div>
+        <div class="availability-legend-element">
+            <img src="/ClientApp/assets/images/availability/qty_low.png"> <br>
+            produkt na<br>
+            wyczerpaniu
+        </div>
+        <div class="availability-legend-element">
+            <img src="/ClientApp/assets/images/availability/qty_tel.png"> <br>
+            proszę <br>
+            dzwonić
+        </div>
+    </div>
+</div>
+
+<app-modal class="confirm-delete-filter-set-modal" [isOpened]="confirmDeleteFilterSetModalData.isOpened"
+    [autoClose]="confirmDeleteFilterSetModalData.autoClose"
+    [autoCloseTimeout]="confirmDeleteFilterSetModalData.autoCloseTimeout" (close)="closeConfirmDeleteFilterSetModal()">
+
+    <p class="title">{{r?.translations?.removeFilterSetDialogMessage}}:
+        <br>
+        <strong>{{confirmDeleteFilterSetModalData?.filterSetIdentifier?.filterSetName}}</strong>
+    </p>
+
+    <button
+        (click)="deleteFilterSet(confirmDeleteFilterSetModalData?.filterSetIdentifier, confirmDeleteFilterSetModalData?.updateFilterSetsExtraActionType)">{{r?.translations?.dialogYes}},
+        {{r?.translations?.remove | lowercase}}</button>
+    <button class="pure" (click)="closeConfirmDeleteFilterSetModal()">{{r?.translations?.dialogNo}}</button>
+
+</app-modal>
+
+<app-modal class="filter-set-notification-modal" [isOpened]="filterSetSuccessNotificationModalData.isOpened"
+    [autoClose]="filterSetSuccessNotificationModalData.autoClose"
+    [autoCloseTimeout]="filterSetSuccessNotificationModalData.autoCloseTimeout"
+    (close)="closeFilterSetNotificationModal(filterSetSuccessNotificationModalData.filterSetModalStatus)">
+
+    <p class="title flex">
+        <span class="mauto" [ngSwitch]="filterSetSuccessNotificationModalData.filterSetModalStatus">
+
+            <ng-container *ngSwitchCase="'AddedSuccessfully'">
+                <i class="ti-check title__icon title__icon--check"></i>
+                {{r?.translations?.selectedFiltersSaved}}.
+                <br>
+                <strong>{{filterSetSuccessNotificationModalData?.filterSetIdentifier?.filterSetName}}</strong>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'NameUpdatedSuccessfully'">
+                <i class="ti-check title__icon title__icon--check"></i>
+                {{r?.translations?.nameForSavedFiltersChanged}}.
+                <br>
+                {{r?.translations?.newName}}:
+                <strong>{{filterSetSuccessNotificationModalData?.filterSetIdentifier?.filterSetName}}</strong>
+            </ng-container>
+        </span>
+    </p>
+
+</app-modal>
+
+<app-modal class="filter-set-notification-modal" [isOpened]="filterSetErrorNotificationModalData.isOpened"
+    [autoClose]="filterSetErrorNotificationModalData.autoClose"
+    [autoCloseTimeout]="filterSetErrorNotificationModalData.autoCloseTimeout"
+    (close)="closeFilterSetNotificationModal(filterSetErrorNotificationModalData.filterSetModalStatus)">
+
+    <p class="title flex">
+        <span class="mauto" [ngSwitch]="filterSetErrorNotificationModalData.filterSetModalStatus">
+
+            <ng-container *ngSwitchCase="'AddingFailed'">
+                <ng-container
+                    *ngTemplateOutlet="errorContainer; context: {errorMessage: r?.translations?.savingSelectedFiltersFailed}">
+                </ng-container>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'DeletionFailed'">
+                <ng-container
+                    *ngTemplateOutlet="errorContainer; context: {errorMessage: r?.translations?.removingFilterSetFailed}">
+                </ng-container>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'UpdatingNameFailed'">
+                <ng-container
+                    *ngTemplateOutlet="errorContainer; context: {errorMessage: r?.translations?.updatingFilterSetNameFailed}">
+                </ng-container>
+            </ng-container>
+
+            <ng-template #errorContainer let-errorMessage="errorMessage">
+                <i class="ti-alert title__icon title__icon--alert"></i>
+                {{errorMessage}}.
+                <span class="title__error-block">{{r?.translations?.stepsAfterErrorMessage}}.</span>
+            </ng-template>
+        </span>
+    </p>
+
+</app-modal>

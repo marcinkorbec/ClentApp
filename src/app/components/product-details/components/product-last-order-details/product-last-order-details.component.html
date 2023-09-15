@@ -1,0 +1,39 @@
+<section class="last-order-details"
+         *ngIf="hasAccessToPriceList && lastOrderDetails">
+    <div class="inner-clear">
+        <div class="f-left"
+             [ngClass]="{'bag-icon-group': !lastOrderDetails.isOrderInBasicUnit, 'small-bag-icon-group': lastOrderDetails.isOrderInBasicUnit }">
+            <i class="icon ti-bag"
+               [ngClass]="{'align-center': !lastOrderDetails.isOrderInBasicUnit}"></i>
+        </div>
+        <div class="f-left last-order-content">
+            <div>
+                <span class="last-order-label">
+                    {{translations?.lastOrderNumber}}:
+                </span>
+                <a [routerLink]="[orderRoutePath, lastOrderDetails.orderId]">
+                    {{lastOrderDetails.orderNumber}}
+                </a>
+                <span class="last-order-label">{{translations?.fromDay}}:</span>
+                {{lastOrderDetails.issueDate | formatDate: 'YYYY-MM-DD'}}
+            </div>
+
+            <div>
+                <span class="last-order-label"
+                      *ngIf="lastOrderDetails.vatDirection === 0">{{translations?.price}}
+                    {{translations?.netHeader.toLowerCase()}}:</span>
+                <span class="last-order-label"
+                      *ngIf="lastOrderDetails.vatDirection === 1">{{translations?.price}}
+                    {{translations?.grossHeader.toLowerCase()}}:</span>
+                {{lastOrderDetails.price | toPrice}} {{lastOrderDetails.currency}},
+                <span class="last-order-label">{{translations?.quantity}}:</span>
+                {{lastOrderDetails.quantity}} {{lastOrderDetails.unit}}
+            </div>
+
+            <div *ngIf="!lastOrderDetails.isOrderInBasicUnit">
+                ({{lastOrderDetails.basicUnitPrice | toPrice}}/{{lastOrderDetails.basicUnit}})
+                ({{lastOrderDetails.converter}})
+            </div>
+        </div>
+    </div>
+</section>

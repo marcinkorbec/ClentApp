@@ -1,0 +1,134 @@
+@import 'configuration.scss';
+
+.app-shipping-address-list {
+
+    .address-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(max(300px, 32%), 1fr));
+        grid-gap: 24px;
+        align-items: flex-start;
+    }
+
+    .address-wrapper {
+        box-shadow: $boxes-shadow;
+        background: $boxes-bg;
+        border: 1px solid $boxes-border;
+    }
+
+    .address {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        min-height: 255px;
+
+        &__country {
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        &__description {
+            margin-top: 16px;
+        }
+
+        &__main {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+        }
+
+        .app-loading {
+            position: absolute;
+        }
+    }
+
+    .address-actions {
+        background: $actions-section-bg;
+        border-left: 1px solid $boxes-border;
+        padding: 32px 0;
+        flex: 0 0 80px;
+
+        @media (max-width: $tablet-max) {
+            flex: 0 0 70px;
+        }
+
+        &__icon {
+            font-size: 1.3em;
+        }
+
+        &__item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4px;
+        }
+
+        &__item-text {
+            line-height: 1.2em;
+        }
+    }
+
+    .address-contact {
+        margin-top: 16px;
+
+        &__icon {
+            margin-right: 4px;
+        }
+
+        &__item {
+            display: block;
+        }
+    }
+
+    .address-header {
+
+        &__heading {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        &__description {
+            font-size: 0.9em;
+        }
+    }
+
+    .address-info {
+        display: flex;
+        justify-content: center;
+        font-size: 1.2em;
+
+        .app-status {
+            width: 100%;
+        }
+
+        .address__status {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 24px;
+            justify-content: center;
+
+
+            &--success {
+                color: $secondary-color;
+                background: $light-green;
+
+                .icon {
+                    margin-right: 4px;
+                }
+            }
+
+            &--failed {
+                font-size: 0.8em;
+                color: $danger;
+                background: $light-red;
+
+                .icon {
+                    margin-right: 8px;
+                    font-size: 1.8em;
+                }
+            }
+        }
+    }
+}

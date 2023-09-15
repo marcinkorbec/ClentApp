@@ -1,0 +1,36 @@
+@import 'configuration';
+
+.app-product-filters-values {
+    .filters-values {
+        display: flex;
+        align-items: flex-start;
+        flex-flow: row wrap;
+
+        &__item {
+            margin-right: 6px;
+            margin-bottom: 6px;
+            font-size: 0.8em;
+
+            @media (min-width: $tablet-min) {
+                margin-right: 8px;
+                margin-bottom: 8px;
+                font-size: 0.9em;
+            }
+
+            &--filter-set {
+                max-width: 300px;
+
+                .save-form {
+                    min-width: 280px;
+                    max-width: 280px;
+                    margin-right: 16px;
+                }
+            }
+        }
+
+        &__filter-name {
+            opacity: 0.8;
+            margin-left: 8px;
+        }
+    }
+}

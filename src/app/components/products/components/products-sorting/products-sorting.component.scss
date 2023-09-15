@@ -1,0 +1,88 @@
+@import 'configuration';
+
+.app-products-sorting {
+    .sorting-dropdown {
+        .dropdown-window {
+            right: 0;
+            left: auto;
+            padding: 0;
+            box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.25);
+
+            @media (min-width: $laptop-min) {
+                width: 200px;
+            }
+        }
+    }
+
+    .sorting-trigger {
+        color: $primary-color;
+        text-align: right;
+
+        @media (min-width: $laptop-min) {
+            font-size: 1.1em;
+        }
+
+        &__icon {
+            margin-right: 8px;
+            font-size: 1.1em;
+        }
+
+        &__selected-option {
+            font-size: 0.75em;
+            line-height: 1em;
+            color: $content-fcolor;
+        }
+    }
+
+    .sorting-content {
+        &__header {
+            padding: 16px;
+            border-bottom: 1px solid $border-color;
+        }
+    }
+
+    .sorting-list {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+    }
+
+    .sorting-list-item {
+        display: flex;
+        align-items: center;
+
+        &__trigger {
+            text-align: left;
+            width: 100%;
+            padding: 0 8px 0 40px;
+            font-family: inherit;
+            font-weight: normal;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            border-bottom: 1px solid $border-color;
+
+            @media (min-width: $laptop-min) {
+                border: auto;
+            }
+
+            &:hover {
+                background-color: unset;
+            }
+
+            &--active {
+                font-weight: bold;
+                padding: 0 8px 0 12px;
+            }
+        }
+
+        &__trigger-icon {
+            font-size: 1.5em;
+            color: $inactive-option;
+
+            &--active {
+                color: $material-primary-color
+            }
+        }
+    }
+}

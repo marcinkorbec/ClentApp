@@ -1,0 +1,28 @@
+
+
+<ng-template #loopElement let-key="key" let-value="value">
+    <div class="pair-key">{{r?.translations[getTranslationsKey(key)] || removeUnderscorePrefix(key)}}</div>
+    <div>{{value}}</div>
+</ng-template>
+
+
+<ng-container *ngIf="removeElementContainer; else noContainers">
+
+    <ng-container *ngFor="let el of data | keyvalue" >
+        <ng-container *ngTemplateOutlet="loopElement; context:el"></ng-container>
+    </ng-container>
+
+</ng-container>
+
+
+<ng-template #noContainers>
+    <div *ngFor="let el of data | keyvalue" >
+        <ng-container *ngTemplateOutlet="loopElement; context:el"></ng-container>
+    </div>
+</ng-template>
+
+
+
+
+
+

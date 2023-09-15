@@ -1,0 +1,106 @@
+@import 'configuration';
+
+.update-products-filter-set {
+    .filter-button {
+        color: inherit;
+        display: flex;
+        align-items: center;
+        width: inherit;
+        max-width: inherit;
+
+        &__icon {
+            opacity: 0.6;
+
+            &--active {
+                opacity: 1;
+                color: $material-primary-color;
+            }
+        }
+
+        &__name {
+            opacity: 0.9;
+            margin-left: 4px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+
+            &--active {
+                opacity: 1;
+                font-weight: bold;
+            }
+        }
+
+        &:hover {
+            .filter-button__icon--active {
+                color: $background;
+            }
+        }
+    }
+
+    .save-form {
+        display: flex;
+        align-items: baseline;
+        margin-right: 8px;
+        width: 100%;
+        max-width: inherit;
+
+        &__error {
+            display: block;
+            color: $danger;
+            font-size: 0.8em;
+            margin: 0;
+            margin-top: 2px;
+        }
+
+        &__icon {
+            &:hover {
+                cursor: pointer;
+            }
+
+            &--close {
+                margin-left: 4px;
+
+                &:hover {
+                    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+                }
+            }
+
+            &--save {
+                margin-right: 6px;
+                color: $primary-color;
+                font-size: 1.2em;
+
+                &:hover {
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+                }
+
+                @media (min-width: $laptop-min) {
+                    font-size: 1.1em;
+                }
+            }
+        }
+
+        &__input-group {
+            width: inherit;
+            max-width: inherit;
+        }
+
+        &__input {
+            font-size: 0.9rem;
+            width: inherit;
+            max-width: inherit;
+
+            &.ng-dirty.ng-invalid {
+                input {
+                    border-bottom-color: $danger;
+                    box-shadow: 0px 1px 4px $danger-shadow;
+                }
+            }
+
+            input {
+                font-size: 0.9rem;
+                height: 36px;
+            }
+        }
+    }
+}

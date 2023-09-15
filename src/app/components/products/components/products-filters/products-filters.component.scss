@@ -1,0 +1,185 @@
+@import 'configuration';
+
+.app-products-filters {
+
+    .filters {
+
+        &--mobile {
+            position: fixed;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: $background;
+        }
+
+        &__form {
+            border-top: 1px solid $border-color;
+            margin-top: 16px;
+        }
+
+        &__submit-button {
+            position: fixed;
+            width: $sidebars-width;
+            display: block;
+            bottom: 0;
+            z-index: 1;
+            background: $secondary-color;
+            color: $fcolor-for-secondary;
+            border-color: $secondary-color;
+            font-size: 1.1em;
+            height: 40px;
+
+            &:hover {
+                background: $secondary-hover-color;
+                border-color: $secondary-hover-color;
+            }
+
+            &--mobile {
+                width: 100%;
+            }
+        }
+
+        .filters-header {
+            display: flex;
+            align-items: center;
+
+            &--mobile {
+                border-bottom: 1px solid $border-color;
+            }
+
+            &--desktop {
+                padding: 6px 12px;
+            }
+
+            &__close-button {
+                background: none;
+                color: $primary-color;
+                width: 64px;
+                height: 64px;
+                border: none;
+                border-right: 1px solid $border-color;
+            }
+
+            &__heading {
+                margin: 0;
+                font-size: 1.2rem;
+
+
+                &--desktop {
+                    font-weight: 500;
+                    margin-left: 8px;
+                }
+            }
+
+            &__icon {
+                font-size: 1.2em;
+                -webkit-transform: rotate(90deg);
+                -moz-transform: rotate(90deg);
+                -ms-transform: rotate(90deg);
+                -o-transform: rotate(90deg);
+                transform: rotate(90deg);
+            }
+
+            &__text-container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                margin: 0 16px;
+            }
+        }
+
+        .filter {
+            background: $thirdparty-color;
+            border-bottom: 1px solid $border-color;
+
+            &__trigger {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            &__heading {
+                width: 100%;
+            }
+
+            &.expanded {
+                background: $background;
+            }
+        }
+    }
+
+    .filter-values {
+        display: flex;
+        flex-direction: column;
+        padding-left: 15px;
+
+        &__item {
+            margin-bottom: 8px;
+        }
+    }
+
+    .filter-sets {
+        display: flex;
+        flex-direction: column;
+        margin-top: 4px;
+
+        &__list {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        &__visibility-btn {
+            align-self: flex-end;
+            margin-right: 8px;
+            font-size: 0.9em;
+        }
+    }
+
+    .filter-set {
+        display: flex;
+        align-items: center;
+
+        &__item {
+            &:hover {
+                background-color: unset;
+            }
+
+            &--trigger {
+                text-align: left;
+                width: 100%;
+                padding: 0 4px 0 10px;
+                font-family: inherit;
+                font-weight: normal;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+
+                .trigger-icon {
+                    font-size: 1.5em;
+                    color: $inactive-option;
+                }
+            }
+
+            &--active {
+                font-weight: bold;
+
+                .trigger-icon {
+                    color: $material-primary-color
+                }
+            }
+
+            &--delete-btn {
+                width: 40px;
+                min-width: 40px;
+                padding: 0;
+                font-size: 1em;
+                color: $primary-color;
+            }
+        }
+    }
+}
+
+.filter-set__item-tooltip {
+    font-size: 0.8em;
+}

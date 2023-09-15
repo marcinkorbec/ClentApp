@@ -1,0 +1,36 @@
+<app-dropdown [isOpen]="isSortingDropOpened"
+              [outsideClose]="true"
+              (open)="onOpenSortingDrop()"
+              class="sorting-dropdown">
+    <trigger class="sorting-trigger">
+        <div>
+            <i class="ti-arrow-down sorting-trigger__icon"></i>
+            <span>{{translations?.sorting}}</span>
+        </div>
+        <div class="sorting-trigger__selected-option">{{activeSortingOption?.translatedName}}</div>
+    </trigger>
+
+    <content class="sorting-content">
+        <header class="sorting-content__header">{{translations?.sorting}}</header>
+        <section>
+            <ul class="sorting-list">
+                <ng-container *ngFor="let sortingOption of sortingOptions">
+                    <li class="sorting-list-item"
+                        *ngIf="sortingOption.isVisible">
+                        <button mat-button
+                                (click)="onClickSortingOption(sortingOption)"
+                                class="sorting-list-item__trigger"
+                                [class.sorting-list-item__trigger--active]="activeSortingOption?.value === sortingOption.value">
+                            <mat-icon class="sorting-list-item__trigger-icon sorting-list-item__trigger-icon--active"
+                                      *ngIf="activeSortingOption?.value === sortingOption.value">
+                                done
+                            </mat-icon>
+                            {{ sortingOption.translatedName }}
+                        </button>
+                    </li>
+                </ng-container>
+
+            </ul>
+        </section>
+    </content>
+</app-dropdown>

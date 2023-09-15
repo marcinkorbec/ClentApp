@@ -1,0 +1,138 @@
+@import 'partials/mixins.scss';
+@import 'configuration.scss';
+
+.app-document-details {
+    display: block;
+
+
+    .app-sticky {
+        z-index: 19;
+    }
+
+
+    .profile-container {
+        padding-left: 0;
+        padding-right: 0;
+
+        @media (max-width: $tablet-max) {
+            padding-top: 30px;
+        }
+
+        button {
+            @media (max-width: $tablet-max) {
+                font-size: 14px;
+            }
+        }
+    }
+
+
+    .box-message {
+        margin-bottom: 30px;
+    }
+
+    .details {
+        margin-top: 15px;
+    }
+
+    .desc {
+        grid-column: 1 / -1;
+    }
+
+    .desc {
+        background: $detailsDescBg;
+        padding: 15px;
+
+        @media (max-width: $tablet-max) {
+            font-size: 12px;
+        }
+    }
+
+    .header-data {
+
+        @media (max-width: $tablet-max) {
+            order: 1
+        }
+
+        .attachments-section {
+            margin-top: 24px;
+        }
+    }
+
+    .header-data p:not(.state), .header-item.api-extensions .pair-key + div {
+        margin: 0;
+        margin-bottom: 10px;
+    }
+
+    .header-item.api-extensions {
+        grid-template-columns: auto;
+        grid-gap: 0;
+    }
+
+    .infos {
+        position: relative;
+
+        @media (max-width: $tablet-max) {
+            padding-bottom: 25px;
+        }
+
+        a {
+            margin-right: 7px;
+        }
+    }
+
+
+    .toggle-visibility {
+        @media (max-width: $tablet-max) {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+    }
+
+    .products-amount {
+        color: tint($content-fcolor, 50%);
+        text-align: right;
+
+        .amount {
+            line-height: 1em;
+            font-size: 2rem;
+            display: block;
+        }
+    }
+
+
+    .untill {
+        text-align: right;
+        margin-bottom: 10px;
+        background: $discounts-color;
+        color: tint($discounts-color, 90%);
+        padding: 5px 10px;
+        font-size: 1.2rem;
+    }
+
+    .makeOfferContainer {
+        justify-content: flex-end;
+
+        @media (max-width: $tablet-max) {
+            justify-content: flex-start;
+            padding: 0;
+        }
+
+        .makeOfferButton {
+            height: 45px;
+            flex: 0 0 30%;
+
+            @media (max-width: $tablet-max) {
+                flex: 1 1 auto;
+            }
+        }
+    }
+
+    .choose-cart {
+        width: 100px;
+
+        @media (max-width: $tablet-max) {
+            width: 100px !important;
+        }
+    }
+}

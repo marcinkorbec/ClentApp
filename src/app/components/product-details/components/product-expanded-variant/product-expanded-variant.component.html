@@ -1,0 +1,222 @@
+<mat-table [dataSource]="expandedVariantGridRows" class="variant-table">
+
+    <ng-container matColumnDef="variantValue">
+        <mat-header-cell class="table-header__item table-header__item--variant" *matHeaderCellDef>
+            <b>{{expandedVariant?.header?.translatedName}}</b> </mat-header-cell>
+        <mat-cell class="table-row__cell table-row__cell--variant" *matCellDef="let row">
+            <ng-container *ngTemplateOutlet="variantValue; context: {row: row}"></ng-container>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="netPrice">
+        <mat-header-cell class="table-header__item" *matHeaderCellDef>{{translations?.netPrice}}</mat-header-cell>
+        <mat-cell class="table-row__cell" *matCellDef="let row">
+            <ng-container *ngTemplateOutlet="netPrice; context: {row: row}"></ng-container>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="grossPrice">
+        <mat-header-cell class="table-header__item" *matHeaderCellDef>{{translations?.grossPrice}}</mat-header-cell>
+        <mat-cell class="table-row__cell" *matCellDef="let row">
+            <ng-container *ngTemplateOutlet="grossPrice; context: {row: row}"></ng-container>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="stockLevel">
+        <mat-header-cell class="table-header__item table-header__item--stock-level" *matHeaderCellDef>
+            {{translations?.warehouse}}</mat-header-cell>
+        <mat-cell class="table-row__cell table-row__cell--stock-level" *matCellDef="let row">
+            <ng-container *ngTemplateOutlet="stockLevel; context: {row: row}"></ng-container>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="quantityWithStepper">
+        <mat-header-cell class="table-header__item table-header__item--stepper" *matHeaderCellDef>
+            {{translations?.quantity}}</mat-header-cell>
+        <mat-cell class="table-row__cell table-row__cell--stepper" *matCellDef="let row">
+            <ng-container *ngTemplateOutlet="quantityWithStepper; context: {row: row}"></ng-container>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="unit">
+        <mat-header-cell class="table-header__item table-header__item--unit" *matHeaderCellDef>{{translations?.unit}}
+        </mat-header-cell>
+        <mat-cell class="table-row__cell table-row__cell--unit" *matCellDef="let row">
+            <ng-container *ngTemplateOutlet="unit; context: {row: row}"></ng-container>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="variantValueWithStockLevel">
+        <mat-header-cell class="table-header__item table-header__item--variant" *matHeaderCellDef>
+            <b>{{expandedVariant?.header?.translatedName}}</b> </mat-header-cell>
+        <mat-cell class="table-row__cell table-row__cell--variant" *matCellDef="let row">
+            <div>
+                <ng-container *ngTemplateOutlet="variantValue; context: {row: row}"></ng-container>
+                <ng-container
+                    *ngIf="row?.purchaseDetails?.stockLevel?.representsExistingValue && row?.productType !== 3 && row?.productType !== 4 && row?.productType !== 6">
+                    <div class="stock-container">
+                        <span class="pair-key">{{translations?.inStock}}:</span>
+                        <span class="stock-container__value">
+                            <ng-container *ngTemplateOutlet="stockLevel; context: {row: row}"></ng-container>
+                        </span>
+                    </div>
+                </ng-container>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="blockPrices">
+        <mat-header-cell class="table-header__item" *matHeaderCellDef></mat-header-cell>
+        <mat-cell class="table-row__cell table-row__cell--block-prices" *matCellDef="let row">
+            <div class="block-prices">
+                <div class="block-prices__net" *ngIf="configService?.config?.priceMode !== 1">
+                    <ng-container *ngTemplateOutlet="netPrice; context: {row: row}"></ng-container>
+                </div>
+                <div class="block-prices__gross" *ngIf="configService?.config?.priceMode !== 0">
+                    <ng-container *ngTemplateOutlet="grossPrice; context: {row: row}"></ng-container>
+                </div>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="quantityWithUnit">
+        <mat-header-cell class="table-header__item" *matHeaderCellDef></mat-header-cell>
+        <mat-cell class="table-row__cell table-row__cell--quantity-unit" *matCellDef="let row">
+            <div class="quantity-unit">
+                <div class="quantity-unit__quantity">
+                    <ng-container *ngTemplateOutlet="quantityWithStepper; context: {row: row}"></ng-container>
+                </div>
+                <div class="quantity-unit__unit">
+                    <ng-container *ngTemplateOutlet="unit; context: {row: row}"></ng-container>
+                </div>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+
+    <mat-header-row *matHeaderRowDef="displayedColumns" class="table-header"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"
+        [class.table-row--active]="row?.variantValue?.status === 'Checked'"></mat-row>
+</mat-table>
+
+
+<ng-template #variantValue let-row="row">
+    <app-loading class="small variant-table__loading" *ngIf="row.loading; else coveringLink"></app-loading>
+    <ng-template #coveringLink>
+        <ng-container *ngIf="row?.variantValue?.status !== 'Checked' && row?.itemExistsInCurrentPriceList">
+            <a class="covering-link covering-link--dark variant-table__covering-link" (click)="onClickOption(row)"></a>
+        </ng-container>
+    </ng-template>
+    <span>{{row.variantValue.translatedName}}</span>
+</ng-template>
+
+<ng-template #netPrice let-row="row">
+    <ng-container *ngIf="row?.purchaseDetails?.price; let price">
+        <div class="price-cell">
+
+            <s class="block price-cell__base-value" *ngIf="price?.baseNetPrice > price?.netPrice">
+                {{price.baseNetPrice | toPrice}}
+                {{price.currency}}
+            </s>
+
+            <div class="price-container" [class.price-container--with-base]="price?.baseNetPrice > price?.netPrice">
+                <span class="price-container__label">{{translations?.net}}</span>
+                <span class="net price-container__value">{{price?.netPrice | toPrice}}</span>
+                <span class="price-container__currency">{{price?.currency}}</span>
+            </div>
+
+            <small class="pair-key price-cell__converter" *ngIf="price?.unitNetPrice?.representsExistingValue">
+                {{price.unitNetPrice.value | toPrice}}/{{row.purchaseDetails.unit.basicUnit}}
+            </small>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #grossPrice let-row="row">
+    <ng-container *ngIf="row?.purchaseDetails?.price; let price">
+        <div class="price-cell">
+
+            <s class="block price-cell__base-value" *ngIf="price?.baseGrossPrice > price?.grossPrice">
+                {{price.baseGrossPrice | toPrice}}
+                {{price.currency}}
+            </s>
+
+            <div class="price-container" [class.price-container--with-base]="price?.baseGrossPrice > price?.grossPrice">
+                <span class="price-container__label">{{translations?.gross}}</span>
+                <span class="price-container__value">{{price?.grossPrice | toPrice}}</span>
+                <span class="price-container__currency">{{price?.currency}}</span>
+            </div>
+
+            <small class="pair-key price-cell__converter" *ngIf="price?.unitGrossPrice?.representsExistingValue">
+                {{price.unitGrossPrice.value | toPrice}}/{{row.purchaseDetails.unit.basicUnit}}
+            </small>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #stockLevel let-row="row">
+    <ng-container *ngIf="row?.productType !== 3 && row?.productType !== 4 && row?.productType !== 6">
+        <ng-container *ngIf="configService?.config?.stateMode === true && row?.purchaseDetails?.stockLevelNumber > 99">
+            dużo &nbsp;<img src="/ClientApp/assets/images/availability/qty_max.png">
+        </ng-container>
+        <ng-container
+            *ngIf="configService?.config?.stateMode === true  && row?.purchaseDetails?.stockLevelNumber > 49 && row?.purchaseDetails?.stockLevelNumber < 100">
+            średnio &nbsp;<img src="/ClientApp/assets/images/availability/qty_med.png">
+        </ng-container>
+        <ng-container
+            *ngIf="configService?.config?.stateMode === true && row?.purchaseDetails?.stockLevelNumber > 9 && row?.purchaseDetails?.stockLevelNumber < 50">
+            mało &nbsp;<img src="/ClientApp/assets/images/availability/qty_low.png">
+        </ng-container>
+        <ng-container
+            *ngIf="configService?.config?.stateMode === true && row?.purchaseDetails?.stockLevelNumber > 4 && row?.purchaseDetails?.stockLevelNumber < 10">
+            poniżej 10 &nbsp;<img src="/ClientApp/assets/images/availability/qty_low.png">
+        </ng-container>
+        <ng-container
+            *ngIf="configService?.config?.stateMode === true && row?.purchaseDetails?.stockLevelNumber > 0 && row?.purchaseDetails?.stockLevelNumber < 5">
+            poniżej 5 &nbsp;<img src="/ClientApp/assets/images/availability/qty_low.png">
+        </ng-container>
+        <ng-container *ngIf="configService?.config?.stateMode === true && row?.purchaseDetails?.stockLevelNumber === 0">
+            brak &nbsp;<img src="/ClientApp/assets/images/availability/qty_tel.png">
+        </ng-container>
+    </ng-container>
+</ng-template>
+
+<ng-template #quantityWithStepper let-row="row">
+    <ng-container *ngIf="row?.productStatus !== 'NotAvailable'; else unavailableProduct">
+        <app-stepper class="responsive" [value]="row.currentQuantity" [min]="0"
+            [isUnitTotal]="row?.purchaseDetails?.unit?.isUnitTotal ? 1 : 0" (changeValue)="changeQuantity($event, row)">
+        </app-stepper>
+    </ng-container>
+    <ng-template #unavailableProduct>
+        <div class="unavailable-option" *ngIf="row?.itemExistsInCurrentPriceList">
+            <i class="unavailable-option__icon ti-na"></i>
+            <span class="unavailable-option__text">{{translations?.articleStateUnavailable}}</span>
+        </div>
+
+        <div class="unavailable-option unavailable-option--not-exist" *ngIf="!row?.itemExistsInCurrentPriceList">
+            <span class="unavailable-option__text">{{translations?.notInPriceList}}</span>
+        </div>
+    </ng-template>
+</ng-template>
+
+<ng-template #unit let-row="row">
+    <div class="unit-cell">
+        <ng-container *ngIf="row?.unitsLength === 1">
+            <span>{{row?.purchaseDetails?.unit?.currentUnit}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="row?.unitsLength > 1">
+            <app-select class="unit-cell__select" [(ngModel)]="row.currentUnitId"
+                [disabled]="row?.purchaseDetails?.unit.unitLockChange" (changeValue)="onUnitChange(row)">
+
+                <app-option *ngFor="let unitValuePair of row?.unitsSummary | keyvalue" [value]="+unitValuePair.key">
+                    {{unitValuePair.value}}
+                </app-option>
+            </app-select>
+        </ng-container>
+
+        <span class="pair-key unit-cell__converter" *ngIf="row?.purchaseDetails?.unit?.converter">
+            {{row.purchaseDetails.unit.converter}}
+        </span>
+    </div>
+</ng-template>

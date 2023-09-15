@@ -1,0 +1,175 @@
+<ng-container *ngIf="filtersSummary?.articleGroupFilters?.length > 0 || filtersSummary?.globalFilters?.length > 0">
+    <ng-container *ngIf="isMobile; else desktopFilters">
+        <section class="filters filters--mobile"
+                 *ngIf="areMobileFiltersOpened">
+            <header class="filters-header filters-header--mobile">
+                <button class="filters-header__close-button ti-close"
+                        (click)="closeMobileFiltersDialog()"></button>
+                <div class="filters-header__text-container">
+                    <h3 class="filters-header__heading">
+                        {{ translations?.filtersHeader }}
+                    </h3>
+                    <button class="outline"
+                            *ngIf="selectedFiltersValuesSummary?.haveAnySelectedFiltersValuesToShow"
+                            (click)="resetAllFiltersValues()">
+                        {{ translations?.clearFilters }}
+                    </button>
+                </div>
+            </header>
+
+            <article class="filters__content"
+                     *ngIf="filtersSummary?.articleGroupFilters?.length > 0 || filtersSummary?.globalFilters?.length > 0">
+                <ng-container *ngTemplateOutlet="mainFiltersForm"></ng-container>
+            </article>
+
+            <button class="filters__submit-button filters__submit-button--mobile"
+                    *ngIf="filtersForm?.dirty"
+                    (click)="submitFilterValues()">
+                {{translations?.filter}}
+            </button>
+        </section>
+    </ng-container>
+</ng-container>
+
+<ng-template #desktopFilters>
+
+    <section class="filters">
+        <header class="filters-header filters-header--desktop">
+            <i class="filters-header__icon ti-panel"></i>
+            <h3 class="filters-header__heading filters-header__heading--desktop">
+                {{ translations?.filtersHeader }}
+            </h3>
+        </header>
+
+        <article class="filters__content">
+            <ng-container *ngTemplateOutlet="mainFiltersForm"></ng-container>
+        </article>
+
+        <button class="filters__submit-button"
+                *ngIf="filtersForm?.dirty"
+                (click)="submitFilterValues()">
+            {{ translations?.filter }}
+        </button>
+    </section>
+</ng-template>
+
+<ng-template #mainFiltersForm>
+    <section class="filter-sets">
+        <ng-container *ngTemplateOutlet="filtersSetsContent"></ng-container>
+    </section>
+
+    <form [formGroup]="filtersForm"
+          class="filters__form">
+        <section formGroupName="ArticleGroupFilters"
+                 *ngIf="filtersSummary?.articleGroupFilters?.length > 0">
+            <app-collapser class="filter"
+                           *ngFor="let articleGroupFilter of filtersSummary.articleGroupFilters"
+                           [ariaHaspopup]="'listbox'"
+                           [isOpen]="checkIfPossibleToExpandFilter('ArticleGroupFilters', articleGroupFilter.filterId)">
+                <trigger class="filter__trigger">
+                    <span class="filter__heading">{{ articleGroupFilter.filterName }}</span>
+                    <i class="arrow ti-angle-down"
+                       aria-hidden="true"></i>
+                </trigger>
+
+                <collapsing>
+                    <section class="filter-values"
+                             [formArrayName]="articleGroupFilter.filterId">
+                        <mat-checkbox class="filter-values__item"
+                                      *ngFor="let filterValue of articleGroupFilter?.values; let i = index"
+                                      [value]="filterValue.id"
+                                      color="primary"
+                                      [formControlName]="i">
+                            {{ filterValue.translatedName }}
+                        </mat-checkbox>
+                    </section>
+                </collapsing>
+            </app-collapser>
+        </section>
+
+        <section formGroupName="GlobalFilters"
+                 *ngIf="filtersSummary?.globalFilters?.length > 0">
+            <app-collapser class="filter"
+                           *ngFor="let globalFilter of filtersSummary.globalFilters"
+                           [ariaHaspopup]="'listbox'"
+                           [isOpen]="checkIfPossibleToExpandFilter('GlobalFilters', globalFilter.filterType)">
+                <trigger class="filter__trigger">
+                    <span class="filter__heading">{{globalFilter.filterName}}</span>
+                    <i class="arrow ti-angle-down"
+                       aria-hidden="true"></i>
+                </trigger>
+
+                <collapsing>
+                    <ng-container [ngSwitch]="globalFilter.filterDisplayType">
+                        <ng-container *ngSwitchCase="'SingleChoiceList'">
+                            <mat-radio-group class="filter-values"
+                                             [formControlName]="globalFilter.filterType">
+                                <mat-radio-button class="filter-values__item"
+                                                  *ngFor="let filterValue of globalFilter?.values"
+                                                  [value]="filterValue.id"
+                                                  color="primary">
+                                    {{ filterValue.translatedName }}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'MultipleChoiceList'">
+                            <section class="filter-values"
+                                     [formArrayName]="globalFilter.filterType">
+                                <mat-checkbox class="filter-values__item"
+                                              *ngFor="let filterValue of globalFilter?.values; let i = index"
+                                              [value]="filterValue.id"
+                                              color="primary"
+                                              [formControlName]="i">
+                                    {{ filterValue.translatedName }}
+                                </mat-checkbox>
+                            </section>
+                        </ng-container>
+                    </ng-container>
+                </collapsing>
+            </app-collapser>
+        </section>
+    </form>
+</ng-template>
+
+<ng-template #filtersSetsContent>
+    <ul class="filter-sets__list">
+        <li class="filter-set"
+            *ngFor="let visibleFilterSet of visibleFilterSets">
+            <button mat-button
+                    [matTooltip]="visibleFilterSet.filterSetName"
+                    matTooltipPosition="right"
+                    matTooltipClass="filter-set__item-tooltip"
+                    [matTooltipDisabled]="isFilterSetTooltipDisabled(visibleFilterSet.filterSetName)"
+                    class="filter-set__item filter-set__item--trigger"
+                    [class.filter-set__item--active]="activeFilterSetId === visibleFilterSet.filterSetId"
+                    (click)="onClickFilterSet(visibleFilterSet)">
+                <mat-icon class="trigger-icon"
+                          *ngIf="activeFilterSetId === visibleFilterSet.filterSetId; else starOutline">star</mat-icon>
+                <ng-template #starOutline>
+                    <mat-icon class="trigger-icon">star_outline</mat-icon>
+                </ng-template>
+                {{ visibleFilterSet.filterSetName }}
+            </button>
+            <button mat-button
+                    class="filter-set__item filter-set__item--delete-btn ti-trash"
+                    (click)="onClickDeleteFilterSet(visibleFilterSet)"></button>
+        </li>
+    </ul>
+
+    <ng-container *ngIf="isManagingVisibilityOfFilterSetsEnabled">
+        <ng-container *ngIf="areFiltersSetsExpanded; else expandFilterSetsBtn">
+            <button class="pure filter-sets__visibility-btn"
+                    (click)="collapseFilterSets()">
+                {{ translations?.collapse | lowercase }}
+
+            </button>
+        </ng-container>
+        <ng-template #expandFilterSetsBtn>
+            <button class="pure filter-sets__visibility-btn"
+                    (click)="expandFilterSets()">
+                ...{{ translations?.showMore | lowercase }}
+            </button>
+        </ng-template>
+    </ng-container>
+
+</ng-template>

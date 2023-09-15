@@ -1,0 +1,14 @@
+<section class="switch"
+         *ngIf="data">
+    <h3 class="switch__header">{{data.translatedHeader}}</h3>
+    <div class="options">
+        <button *ngFor="let value of data.values"
+                class="reset options__item"
+                [class.options__item--active]="value.status === 'Checked'"
+                [disabled]="value.status === 'Checked' || value.status === 'NotAvailable'"
+                mat-stroked-button
+                (click)="onClickOption(value.id)">
+            {{value.translatedName}}
+        </button>
+    </div>
+</section>

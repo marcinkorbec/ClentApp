@@ -1,0 +1,88 @@
+<div *ngIf="articlesMenuItem" class="section-title tablet-block {{articlesMenuItem.cssClass}}">
+    <i class="navBar-item-image ti-menu {{articlesMenuItem.cssClass}}"></i>
+    {{r?.translations[articlesMenuItem.resourceKey]}}
+</div>
+
+<nav *ngIf="groupsService.currentGroup && menuService.routePaths">
+
+    <ul>
+
+        <li class="prev-buttons inner-clear" *ngIf="isBackButton() || isRootButton()">
+
+            <button class="outline change-group f-left root" *ngIf="isRootButton()" (click)="goToRoot()">
+
+                <i class="ti-angle-double-left"></i>
+            </button>
+
+            <button class="outline change-group f-left back" (click)="backToPreviousGroup()"
+                [ngClass]="{'full': !isRootButton()}">
+
+                <i class="ti-angle-left"></i>
+                <span>{{r?.translations?.back}}</span>
+            </button>
+
+        </li>
+
+        <ng-container
+            *ngIf="groupsService.currentGroup.id === groupsService.rootGroupId || groupsService.currentGroupId === 0">
+            <li *ngFor="let item of barExceptItems"
+                [ngClass]="{'active-left': item.id === groupsService.currentGroup.id}"
+                class="category-item full inner-clear tablet-block">
+                <a class="group-label outline button f-left" [routerLink]="['/'+item.url]">
+                    <i class="navBar-item-image ti-menu {{item.cssClass}}"></i>{{r?.translations[item.resourceKey]}}
+                </a>
+            </li>
+        </ng-container>
+
+        <li *ngFor="let item of groupsService.childGroups" [ngClass]="{'active-left': item.id === groupsService.currentGroup.id,
+                        'full': !item.isExpand}" class="category-item inner-clear">
+
+            <a *ngIf="groupsService.lastChangedGroup?.id !== item.id; else activeGroup"
+                class="group-label outline button f-left" [routerLink]="[menuService.routePaths.items, item.id]"
+                [queryParams]="{parent: groupsService.currentGroup.id}"
+                style="display:flex;align-items: center;">
+                <!--Pg zmiany p-->
+                <ng-container *ngIf="item.name.indexOf('_') !== -1; then splitProd; else normalProd"></ng-container>
+                <ng-template #splitProd>
+                    <!-- <img src="/ClientApp/assets/images/category-tree-icons/{{item.name}}.svg" style="height: 38px; padding: 1px; margin-right: 4px;" /> -->
+                    <span style="width:42px;display: flex;"><img src="/ClientApp/assets/images/category-tree-icons/{{item.name}}.svg" style="height: 28px; min-width: 42px;" /></span>
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;line-height: 2.5;">{{(item.name | splitPipe: "_")[1] }}</span>
+                </ng-template>
+                <ng-template #normalProd>
+                    {{item.name}}
+                </ng-template>
+                <!--Pg zmiany k-->
+            </a>
+
+            <ng-template #activeGroup>
+                <div class="group-label outline button f-left"
+                    *ngIf="groupsService.currentGroup.id !== item.id; else lastActiveGroup"
+                    (click)="goToGroup(item.id, groupsService.currentGroup.id)"
+                    style="display:flex;align-items: center;">
+                    <!--Pg zmiany p-->
+                    <ng-container *ngIf="item.name.indexOf('_') !== -1; then splitProd; else normalProd"></ng-container>
+                    <ng-template #splitProd>
+                        <!-- <img src="/ClientApp/assets/images/category-tree-icons/{{item.name}}.svg" style="height: 38px; padding: 1px; margin-right: 4px;" /> -->
+                        <span style="width:42px;display: flex;"><img src="/ClientApp/assets/images/category-tree-icons/{{item.name}}.svg" style="height: 28px; min-width: 42px;" /></span>
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;line-height: 2.5;">{{(item.name | splitPipe: "_")[1] }}</span>
+                    </ng-template>
+                    <ng-template #normalProd>
+                        {{item.name}}
+                    </ng-template>
+                    <!--Pg zmiany k-->
+                </div>
+            </ng-template>
+
+            <ng-template #lastActiveGroup>
+                <div class="outline group-label f-left">
+                    {{item.name}}
+                </div>
+            </ng-template>
+
+            <button class="group-next ti-angle-right f-right secondary" *ngIf="item.isExpand"
+                (click)="scrollToGroup(item.id, groupsService.currentGroup.id)"></button>
+
+        </li>
+
+    </ul>
+</nav>

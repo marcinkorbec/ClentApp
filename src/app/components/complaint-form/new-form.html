@@ -1,0 +1,204 @@
+<app-menu class="profile-bar" *ngIf="backMenuItem" [menuItems]="[backMenuItem]">
+
+    <div class="menu-item active-top">
+
+        <p class="label">
+            {{r?.translations?.complaintForm}}
+        </p>
+
+    </div>
+
+</app-menu>
+
+<form class="articles clear" #complaintForm="ngForm" name="complaintForm" *ngIf="complaintFormService.item as item"
+    (ngSubmit)="complain(complaintForm.value)">
+
+    <div class="narrow-content">
+        <div class="inner-clear product flex">
+
+            <div class="half f-left product-info">
+
+                <a *ngIf="configService?.permissions?.hasAccessToArticleList"
+                    [routerLink]="[menuService.routePaths.itemDetails, item.itemId]" class="covering-link">
+                </a>
+
+                <div class="product-desc">
+                    <span class="product-name block">{{item.name}}</span>
+                    <span class="product-code" *ngIf="configService?.config?.showCode">{{item.code}}</span>
+                    <div class="product-attributes" *ngIf="item.attributes?.length > 0">
+                        <span class="product-attribute" *ngFor="let attribute of item.attributes">
+                            <span
+                                class="product-attribute__item product-attribute__item--name">{{attribute.translatedName}}:
+                            </span>
+                            <span class="product-attribute__item">{{attribute.values | join}}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <p class="source-document">
+
+                    <span class="pair-key">{{r?.translations?.purchaseDocument}}:</span>
+
+                    <ng-container *ngIf="hrefCreator(item); else withoutLink">
+                        <a class="link-in-table" [routerLink]="hrefCreator(item)">
+                            {{item.sourceDocumentName}}
+                        </a>
+                    </ng-container>
+                    <ng-template #withoutLink>
+                        {{item.sourceDocumentName}}
+                    </ng-template>
+
+                </p>
+
+                <div class="image-container inline-block">
+                    <app-image [alt]="item.name" [height]="item.image.imageHeight" [width]="item.image.imageWidth"
+                        [imageData]="item.image">
+                    </app-image>
+                </div>
+
+            </div>
+
+            <div class="half f-right product-form">
+
+                <div>
+                    <p class="pair-key">{{r?.translations?.complaintQuantity}}<i class="required mark"></i></p>
+
+                    <app-stepper [name]="'quantity'" [isUnitTotal]="item.isUnitTotal" [value]="item.basicQuantity"
+                        [max]="complaintFormService.maxQuantity" (changeValue)="changeQuantity($event)">
+                    </app-stepper>
+
+                    <div class="inline-block vmiddle">
+                        {{r?.translations?.ofSomeCount | format: item.basicQuantityString}}
+                        {{item.basicUnit}}
+
+                        <span class="converter">{{item.unitConversion}}</span>
+                    </div>
+
+
+                </div>
+
+                <!--Naprawa-->
+                <p class="pair-key">Naprawa<i class="required mark"></i></p>
+                <div style="margin-bottom: 1em;">
+                    <label *ngFor="let repairType of repairTypesList" style="cursor: pointer; margin-right: 2em;">
+                        <input style="height: 12px; min-width: 0px; cursor: pointer;" value="{{repairType.value}}"
+                            [(ngModel)]="selectRepairType" name="repairTypeList" type="radio"
+                            (change)="onRepairTypeChange(repairType)" /> {{repairType.name}}
+                    </label>
+                </div>
+                <div class="" *ngIf="selectRepairType == 'true'">
+                    <div style="margin-bottom: 1em;">
+                        <label style="margin-right:50px;">Dowód zakupu:<i class="required mark"></i></label>
+                        <input type="file" required />
+                    </div>
+                    <div>
+                        <label style="margin-right:12px;">Kwarta gwarancyjna:<i class="required mark"></i></label>
+                        <input type="file" required />
+                    </div>
+                </div>
+                <!--radiobutton i jeżeli gwarancyjna to rozwinięte inputy z dodawaniem zdjęć-->
+
+                <!--Przyczyny reklamacji-->
+                <p class="pair-key">{{r?.translations?.complaintReason}}<i class="required mark"></i></p>
+                <app-select name="complaintsReasons" [(ngModel)]="selectedComplaintReason" required>
+                    <app-option *ngFor="let req of complaintsReasons" [value]="req.id">{{req.name}}</app-option>
+                </app-select>
+                <p class="pair-key">Dodatkowe szczegóły przyczyny</p>
+                <textarea name="reason" ngModel></textarea>
+                <div *ngIf="selectedComplaintReason == 4">
+                    <label style="margin-right:12px;">Zdjęcie produktu:<i class="required mark"></i></label>
+                    <input type="file" required />
+                </div>
+                <!--Wybór żądanaia-->
+                <p class="pair-key">{{r?.translations?.chooseRequest}}<i class="required mark"></i></p>
+
+                <app-select name="request" *ngIf="r?.translations?.chooseRequest" (firstOpen)="loadRequests()"
+                    [initialLabel]="r.translations.chooseRequest" [(ngModel)]="item.reason" required>
+                    <app-option *ngFor="let req of complaintFormService.requests" [value]="req.id">{{req.name}}
+                    </app-option>
+                </app-select>
+
+                <p class="pair-key"><i class="required mark"></i> {{r?.translations?.requiredFields}}</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="complaint-options inner-clear">
+
+        <div class="narrow-content inner-clear">
+
+            <div class="half f-left">
+
+                <div class="f-left delivery half">
+
+                    <h3 class="subsection-title">{{r?.translations?.myNumber}}</h3>
+
+                    <input name="sourceNumber" ngModel type="text" />
+                </div>
+
+            </div>
+
+            <div class="half f-right">
+
+                <div class="note inner-clear">
+
+                    <button class="pure f-left" (click)="changeNoteDisplay()" type="button">
+
+                        <span *ngIf="!noteFormDisplay">
+
+                            <span
+                                *ngIf="complaintForm?.controls?.description?.value === null || complaintForm?.controls?.description?.value === ''">
+                                <i class="ti-notepad"></i> {{r?.translations?.add}}
+                            </span>
+                            <span
+                                *ngIf="complaintForm?.controls?.description?.value !== null && complaintForm?.controls?.description?.value !== ''">
+                                <i class="ti-pencil"></i> {{r?.translations?.edit}}
+                            </span>
+                        </span>
+
+                        <span *ngIf="noteFormDisplay">
+                            <span
+                                *ngIf="complaintForm?.controls?.description?.value === null || complaintForm?.controls?.description?.value === ''">
+                                <i class="ti-notepad"></i> {{r?.translations?.collapse}}
+                            </span>
+                            <span
+                                *ngIf="complaintForm?.controls?.description?.value !== null && complaintForm?.controls?.description?.value !== ''">
+                                <i class="ti-pencil"></i> {{r?.translations?.apply}}
+                            </span>
+                        </span>
+
+                        <span>{{r?.translations?.note | lowercase}}</span>
+                    </button>
+
+                    <textarea name="description" class="clear" ngModel [hidden]="!noteFormDisplay">
+                    </textarea>
+
+                    <div class="note-added clear"
+                        *ngIf="complaintForm?.controls?.description?.value !== undefined && complaintForm?.controls?.description?.value !== '' && !noteFormDisplay">
+                        {{complaintForm?.controls?.description?.value}}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-bottom-bar">
+
+        <div class="action-buttons inner-clear">
+            <div class="narrow-content">
+
+                <button type="submit" class="add-order f-right half"
+                    [disabled]="complaintForm.invalid || selectedComplaintReason == 0">
+                    <i class="ti-write"></i>
+                    {{r?.translations?.placeComplaint}}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</form>

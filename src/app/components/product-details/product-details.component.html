@@ -1,0 +1,689 @@
+<app-menu [groupsAsDrop]="true" [initialGroupId]="productBasicDetails?.articleGroupId"></app-menu>
+
+
+<ng-container *ngIf="!hasError; else error">
+
+    <div class="item-details clear narrow-content">
+
+        <div class="site-map tablet-hidden" *ngIf="breadcrumbs">
+
+
+            <a class="pure breadcrumb inline-block" [routerLink]="[menuService.routePaths.home]">
+
+                <i class="ti-home"></i>
+            </a>
+
+            <a class="pure breadcrumb inline-block" *ngFor="let item of breadcrumbs.slice(1)"
+                [routerLink]="[menuService.routePaths.items, item.id]">
+
+                <i class="ti-angle-right separator"></i>
+                <ng-container *ngIf="item.name.indexOf('_') !== -1; then splitProd; else normalProd"></ng-container>
+                <ng-template #splitProd>
+                    {{(item.name | splitPipe: "_")[1] }}
+                </ng-template>
+                <ng-template #normalProd>
+                    {{item.name}}
+                </ng-template>
+            </a>
+
+            <span class="breadcrumb inline-block">
+                <i class="ti-angle-right separator"></i>
+                {{productBaseInfo?.name}}
+            </span>
+        </div>
+
+        <div class="name">
+            <app-loading class="name__loading small" *ngIf="productsDetailsLoading.nameLoading"></app-loading>
+            <!--PG zmiany p-->
+            <h1>
+                <ng-container *ngIf="productBaseInfo?.name">
+                    <img class="product-marker" src="/ClientApp/assets/images/icons/plus.svg" />
+                </ng-container>
+                {{productBaseInfo?.name}}
+            </h1>
+            <!--PG zmiany p-->
+            <div class="product-code"
+                *ngIf="configService?.config?.showCode && productBaseInfo?.code?.representsExistingValue">
+                {{productBaseInfo.code.value}}
+            </div>
+        </div>
+
+        <ng-container *ngIf="configService.isMobile">
+            <ng-container *ngTemplateOutlet="thresholdPriceList"></ng-container>
+        </ng-container>
+
+        <div class="flags">
+            <app-loading class="flags__loading small" *ngIf="productsDetailsLoading.flagLoading"></app-loading>
+
+            <ng-container *ngIf="productBasicDetails?.flag">
+                <app-product-flags [value]="productBasicDetails.flag"></app-product-flags>
+            </ng-container>
+        </div>
+
+        <div class="gallery">
+
+            <app-loading *ngIf="productsDetailsLoading.galleryLoading"></app-loading>
+
+            <ng-container
+                *ngIf="configService?.config?.showImages && productAttributesSummary?.articleImages?.length > 0; else noProductPhoto">
+                <app-slider class="big-photo" [thumbs]="true" [items]="1" [slideBy]="1" [nav]="false" [zoom]="true">
+
+                    <div *ngFor="let image of productAttributesSummary.articleImages" class="image-container">
+                        <img [src]="image.imageSrc" [alt]="productBaseInfo?.name" />
+                    </div>
+
+                </app-slider>
+            </ng-container>
+
+            <ng-template #noProductPhoto>
+                <!--Pg zmiana p-->
+                <div class="image-container">
+                    <img src="/ClientApp/assets/images/no-image.svg" style="max-width: 250px; width: 100%; height: 240px; margin: 0 auto;"/>
+                    <!-- <i class="ti-noimage no-photo"></i> -->
+                </div>
+                <!--Pg zmiana k-->
+            </ng-template>
+
+        </div>
+
+        <ng-container *ngIf="productDetailsType === 'NotContainVariants'">
+            <ng-container *ngTemplateOutlet="basicDetailsWithoutVariants"></ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="productDetailsType === 'ContainsVariants'">
+            <section class="variants">
+                <article class="variants__details">
+                    <!--PG początek-->
+                    <app-product-variants-details [translations]="r?.translations"
+                        [applicationType]="configService?.applicationId" [generalInfo]="generalInfo"
+                        [thresholdPriceLists]="thresholdPriceLists" [stores]="stores"
+                        [plannedDeliveries]="plannedDeliveries" [lastOrderDetails]="lastOrderDetails"
+                        [productAttributesSummary]="productAttributesSummary"
+                        (switchVariantsChanged)="onSwitchVariantsChanged($event)"
+                        (productVariantChanged)="onProductVariantChanged($event)"
+                        (loadPurchaseDetails)="onLoadPurchaseDetails($event)" (unitChanged)="onUnitChanged($event)"
+                        (warehouseChanged)="onWarehouseChanged($event)" (addToCart)="onAddProductVariantsToCart($event)"
+                        (addToStore)="onAddProductVariantsToStore($event)">
+                    </app-product-variants-details>
+                    <!--PG koniec-->
+                </article>
+                <article>
+                    <ng-container *ngTemplateOutlet="basicDetailsForVariants"></ng-container>
+                </article>
+            </section>
+        </ng-container>
+
+        <ng-container *ngIf="productDetailsType === 'NotContainVariants'">
+            <div class="purchase-container"
+                [ngClass]="{'with-threshold': thresholdPriceLists?.hasAnyThresholdPriceList}">
+                <div class="purchase-details">
+
+                    <app-loading class="details-loader" *ngIf="productsDetailsLoading.purchaseDetailsLoading">
+                    </app-loading>
+
+                    <!-- <div class="availability-wrapper" *ngIf="configService.applicationId === 0"
+                        [ngClass]="{'with-threshold': thresholdPriceLists?.hasAnyThresholdPriceList}">
+                        <app-product-availability [translations]="r?.translations" [details]="productBasicDetails">
+                        </app-product-availability>
+                    </div> -->
+
+                    <div class="prices clear flex flex-wrap inner-clear"
+                        *ngIf="configService?.permissions?.hasAccessToPriceList">
+
+                        <div class="net-price f-left" *ngIf="configService?.config?.priceMode !== 1">
+
+                            <s class="block"
+                                *ngIf="currentPurchaseDetails?.price?.baseNetPrice > currentPurchaseDetails?.price?.netPrice">
+                                {{currentPurchaseDetails.price.baseNetPrice | toPrice}}
+                                {{currentPurchaseDetails.price.currency}}
+                            </s>
+
+                            <small class="brutto-netto">{{r?.translations?.net}}</small>
+
+                            <span class="price-value net">{{currentPurchaseDetails?.price?.netPrice | toPrice}}</span>
+                            <span class="currency">{{currentPurchaseDetails?.price?.currency}}</span>
+
+                            <small class="pair-key converter"
+                                *ngIf="currentPurchaseDetails?.price?.unitNetPrice?.representsExistingValue">
+                                {{currentPurchaseDetails.price.unitNetPrice.value |
+                                toPrice}}/{{currentPurchaseDetails.unit.basicUnit}}
+                            </small>
+                        </div>
+
+                        <div class="gross-price f-right" *ngIf="configService?.config?.priceMode !== 0">
+
+                            <s class="block"
+                                *ngIf="currentPurchaseDetails?.price?.baseGrossPrice > currentPurchaseDetails?.price?.grossPrice">
+                                {{currentPurchaseDetails.price.baseGrossPrice | toPrice}}
+                                {{currentPurchaseDetails.price.currency}}
+                            </s>
+
+                            <small class="brutto-netto">{{r?.translations?.gross}}</small>
+
+                            <span class="price-value">{{currentPurchaseDetails?.price?.grossPrice | toPrice}}</span>
+
+                            <span class="currency">{{currentPurchaseDetails?.price?.currency}}</span>
+
+                            <small class="pair-key converter"
+                                *ngIf="currentPurchaseDetails?.price?.unitGrossPrice?.representsExistingValue">
+                                {{currentPurchaseDetails.price.unitGrossPrice.value |
+                                toPrice}}/{{currentPurchaseDetails.unit.basicUnit}}
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="adding-form inline-block">
+
+                        <div class="inner-clear amount-grid">
+
+                            <div class="stock" *ngIf="configService?.config?.showState && productBaseInfo?.type !== 3 && productBaseInfo?.type !== 4 && productBaseInfo?.type !== 6">
+
+                                <span class="pair-key">{{r?.translations?.inStock}}:</span>
+
+                                <span *ngIf="configService?.config?.stateMode === false && currentPurchaseDetails?.stockLevelNumber === 0">{{r?.translations?.none}}</span>
+
+                                <ng-container
+                                    *ngIf="configService?.config?.stateMode === true && currentPurchaseDetails?.stockLevelNumber > 99">
+                                    dużo <img src="/ClientApp/assets/images/availability/qty_max.png">
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="configService?.config?.stateMode === true  && currentPurchaseDetails?.stockLevelNumber > 49 && currentPurchaseDetails?.stockLevelNumber < 100">
+                                    średnio <img src="/ClientApp/assets/images/availability/qty_med.png">
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="configService?.config?.stateMode === true && currentPurchaseDetails?.stockLevelNumber > 9 && currentPurchaseDetails?.stockLevelNumber < 50">
+                                    mało <img src="/ClientApp/assets/images/availability/qty_low.png">
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="configService?.config?.stateMode === true && currentPurchaseDetails?.stockLevelNumber > 4 && currentPurchaseDetails?.stockLevelNumber < 10">
+                                    poniżej 10 <img src="/ClientApp/assets/images/availability/qty_low.png">
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="configService?.config?.stateMode === true && currentPurchaseDetails?.stockLevelNumber > 0 && currentPurchaseDetails?.stockLevelNumber < 5">
+                                    poniżej 5 <img src="/ClientApp/assets/images/availability/qty_low.png">
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="configService?.config?.stateMode === true && currentPurchaseDetails?.stockLevelNumber === 0">
+                                    brak <img src="/ClientApp/assets/images/availability/qty_tel.png">
+                                </ng-container>
+
+                            </div>
+
+                            <div class="pair-key converter" *ngIf="currentPurchaseDetails?.unit?.converter">
+                                {{currentPurchaseDetails.unit.converter}}
+                             </div>
+
+                            <app-stepper
+                                    *ngIf="configService?.permissions?.hasAccessToCart && productBasicDetails?.status !== 'NotAvailable'"
+                                    [value]="currentQuantity"
+                                    [isUnitTotal]="currentPurchaseDetails?.unit?.isUnitTotal ? 1 : 0"
+                                    (changeValue)="changeProductQuantity($event)">
+                                </app-stepper>
+
+                                <div class="unavailable-option" *ngIf="productBasicDetails?.status === 'NotAvailable'">
+                                    <i class="unavailable-option__icon ti-na"></i>
+                                    <span
+                                        class="unavailable-option__text">{{r?.translations?.articleStateUnavailable}}</span>
+                                </div>
+
+                            <div class="unit-group">
+
+                                <span class="one-unit" *ngIf="currentUnitsLength === 1">{{currentPurchaseDetails.unit.currentUnit}}</span>
+
+                                <app-select *ngIf="currentUnitsLength > 1" class="full block"
+                                    [disabled]="currentPurchaseDetails.unit.unitLockChange" [(ngModel)]="currentUnitId"
+                                    (changeValue)="onProductUnitChange(currentUnitId)">
+
+                                    <app-option *ngFor="let unitValuePair of currentUnitsSummary | keyvalue"
+                                        [value]="+unitValuePair.key">
+                                        {{unitValuePair.value}}
+                                    </app-option>
+                                </app-select>
+
+                            </div>
+                        </div>
+
+                        <ng-container *ngIf="productAttributesSummary?.articleAttributes?.length > 0">
+                            <ng-container *ngFor="let attribute of productAttributesSummary.articleAttributes">
+                                <span style="color: red;" *ngIf="attribute.name == 'MinimumZamówieniowe'">
+                                    {{ attribute.value }}
+                                </span>
+                            </ng-container>
+                        </ng-container>
+
+                        <div class="to-cart inline-flex"
+                            *ngIf="configService?.permissions?.hasAccessToCart && productBasicDetails?.status !== 'NotAvailable'">
+
+                            <app-cart-select class="choose-cart" name="cartId" ngModel #productCartSelect="ngModel">
+                            </app-cart-select>
+
+                            <button class="cart add-to-cart" (click)="addToCart(productCartSelect?.value);">
+                                <i class="icon ti-shopping-cart"></i><span>{{r?.translations?.addToCart}}</span>
+                            </button>
+                        </div>
+
+                        <div class="to-store" *ngIf="configService?.permissions?.hasAccessToStore">
+                            <app-select class="choose-store" [ngModel]="stores?.length > 0 ? stores[0].id : null"
+                                #productStoreSelect="ngModel">
+
+                                <app-option *ngFor="let store of stores" [value]="store.id">
+                                    {{store.name || store.id}}
+                                </app-option>
+                                <app-option [value]="-1" class="create-new-store-option">
+                                    {{r?.translations?.newStore}}
+                                </app-option>
+
+                            </app-select>
+
+                            <div class="add-to-store" (click)="addProductToStore(productStoreSelect?.value)">
+                                <i class="ti-clipboard"></i>
+                                <span>{{r?.translations?.toStore}}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <app-product-planned-deliveries [translations]="r?.translations"
+                        [plannedDeliveries]="plannedDeliveries" [productName]="productBaseInfo?.name"
+                        [productCode]="configService?.config?.showCode && productBaseInfo?.code?.representsExistingValue ? productBaseInfo.code.value : null"
+                        [hasAccessToPlannedDeliveries]="configService?.permissions?.hasAccessToPlannedDeliveries">
+                    </app-product-planned-deliveries>
+                </div>
+                <app-product-last-order-details [translations]="r?.translations" [lastOrderDetails]="lastOrderDetails"
+                    [hasAccessToPriceList]="configService?.permissions?.hasAccessToPriceList"
+                    [orderRoutePath]="menuService.routePaths.orders">
+                </app-product-last-order-details>
+            </div>
+        </ng-container>
+
+
+        <nav class="sticky product-nav section inner-clear" *ngIf="tabsVisible">
+
+            <div *ngIf="productBasicDetails?.description" class="f-left item" (click)="scrollToLabel('desc')">
+                <i class="ti-receipt"></i> {{r?.translations?.description}}
+            </div>
+
+            <div *ngIf="productAttributesSummary?.articleAttributes?.length > 0" class="f-left item"
+                (click)="scrollToLabel('attributes')">
+                <i class="ti-settings"></i> {{r?.translations?.productParameters}}
+            </div>
+
+            <div *ngIf="productAttributesSummary?.articleAttachments?.length > 0" class="f-left item"
+                (click)="scrollToLabel('attachments')">
+                <i class="ti-clip"></i> {{r?.translations?.attachments}}
+            </div>
+
+            <div *ngIf="product?.replacements?.length > 0" class="f-left item" (click)="scrollToLabel('replacements')">
+                <i class="ti-link"></i> {{r?.translations?.substitutes}}
+            </div>
+        </nav>
+
+        <div data-label="desc" class="desc section" *ngIf="productBasicDetails?.description">
+
+            <h2 class="section-title section-title-font"><img src="/ClientApp/assets/images/icons/plus.svg" />{{r?.translations?.description | uppercase}}</h2>
+
+            <div class="inner-clear" [innerHTML]="productBasicDetails.description">
+            </div>
+        </div>
+
+
+        <div data-label="attributes" class="section all-attributes">
+
+            <app-loading class="all-attributes__loader" *ngIf="productsDetailsLoading.attributesLoading"></app-loading>
+
+            <ng-container *ngIf="productAttributesSummary?.articleAttributes?.length > 0">
+
+                <h2 class="section-title section-title-font"><img src="/ClientApp/assets/images/icons/plus.svg" />{{r?.translations?.productParameters | uppercase}}</h2>
+
+                <div class="attributes">
+
+                    <ng-container *ngIf="productDetailsType === 'ContainsVariants'">
+                        <ng-container *ngTemplateOutlet="otherBasicDetails"></ng-container>
+                    </ng-container>
+
+                    <ng-container *ngFor="let attribute of productAttributesSummary.articleAttributes">
+                        <p class="attribute">
+                            {{attribute.name}}
+                        </p>
+
+                        <p class="attribute">
+                            {{attribute.value}}
+                        </p>
+                    </ng-container>
+                </div>
+            </ng-container>
+
+        </div>
+
+        <div data-label="attachments" class="attachments section">
+
+            <ng-container *ngIf="productAttributesSummary?.articleAttachments?.length > 0">
+                <h2 class="section-title"><img src="/ClientApp/assets/images/icons/plus.svg" />{{r?.translations?.attachments}}</h2>
+
+                <div class="inner-clear">
+                    <app-attachments [attachments]="productAttributesSummary.articleAttachments"
+                        [attachmentsLayoutType]="'VerticalList'"></app-attachments>
+                </div>
+            </ng-container>
+        </div>
+
+
+        <div data-label="replacements" class="replacements section" appLazy [attr.fixheightwhenselectopened]="true"
+            (lazyAction)="loadVisibleReplacementsAndAllUnits(); this.changeDetector.markForCheck();" *ngIf="product?.replacements?.length > 0">
+
+
+            <h2 class="section-title"><img src="/ClientApp/assets/images/icons/plus.svg" />{{r?.translations?.substitutes}}</h2>
+
+            <app-slider [items]="replacementsVisibleSlidesAmount" [domChanges]="true" [responsive]="{'1281': {'items': 1}}"
+                (indexChange)="loadUnvisibleReplacement($event + 1)">
+
+                <div *ngFor="let replacement of product.replacements; let i = index; trackBy: replacementTrackBy">
+
+                    <app-loading *ngIf="!replacement.unitsLoaded || (!replacement.code && !replacement.availability)">
+                    </app-loading>
+
+                    <div class="box inner-clear">
+                        <a [routerLink]="[menuService.routePaths.itemDetails, replacement.id]"
+                           [queryParams]="{group: groupId}"
+                            class="covering-link"></a>
+
+                        <div class="image-container f-left">
+                            <app-image [alt]="replacement.name" [height]="replacement.imageHeight"
+                                [width]="replacement.imageWidth" [imageData]="replacement.image">
+                            </app-image>
+                        </div>
+
+                        <div class="replacement-info f-right">
+
+                            <h3 class="subsection-title emphasised">{{replacement.name}}</h3>
+                            <span class="block product-code"
+                                *ngIf="configService?.config?.showCode">{{replacement.code}}</span>
+
+                            <div class="prices flex flex-wrap inner-clear"
+                                *ngIf="configService?.permissions?.hasAccessToPriceList">
+
+
+                                <div class="net-price f-left" *ngIf="configService?.config?.priceMode !== 1">
+
+                                    <s class="block" *ngIf="replacement.baseNetPrice > replacement.netPrice">
+                                        {{replacement.baseNetPrice | toPrice }} {{replacement.currency}}
+                                    </s>
+
+                                    <small class="brutto-netto">{{r?.translations?.net}}</small>
+
+                                    <span class="price-value net">{{replacement.netPrice | toPrice}}</span>
+
+                                    <span class="currency">{{replacement.currency}}</span>
+
+                                    <small class="pair-key converter"
+                                        *ngIf="replacement.unitNetPrice && replacement.unitId !== replacement.basicUnitNo">
+                                        {{replacement.unitNetPrice | toPrice }}/{{replacement.basicUnit}}
+                                    </small>
+                                </div>
+
+                                <div class="gross-price" [ngClass]="configService.isMobile ? 'f-left' : 'f-right'"
+                                    *ngIf="configService?.config?.priceMode !== 0">
+
+
+                                    <s class="block" *ngIf="replacement.baseGrossPrice > replacement.grossPrice">
+                                        {{replacement.baseGrossPrice | toPrice }} {{replacement.currency}}
+                                    </s>
+
+                                    <small class="brutto-netto">{{r?.translations?.gross}}</small>
+
+                                    <span class="price-value">{{replacement.grossPrice | toPrice}}</span>
+
+                                    <span class="currency">{{replacement.currency}}</span>
+
+                                    <small class="pair-key converter"
+                                        *ngIf="replacement.unitGrossPrice && replacement.unitId !== replacement.basicUnitNo">
+                                        {{replacement.unitGrossPrice | toPrice}}/{{replacement.basicUnit}}
+                                    </small>
+                                </div>
+
+                            </div>
+
+                            <div class="replacement-quantity amount-grid">
+
+                                <div class="stock"
+                                        *ngIf="configService?.config?.showState && replacement.type !== 3 && replacement.type !== 4 && replacement.type !== 6">
+
+                                        <span class="pair-key">{{r?.translations?.inStock}}:</span>
+
+                                        <ng-container *ngIf="configService?.config?.stateMode === true">
+                                            {{replacement.stockLevel}}
+                                        </ng-container>
+
+                                        <ng-container
+                                            *ngIf="configService?.config?.stateMode === false && replacement.stockLevelNumber > 0">
+                                            {{r?.translations?.available }}
+                                        </ng-container>
+
+                                        <ng-container
+                                            *ngIf="configService?.config?.stateMode === false && replacement.stockLevelNumber === 0">
+                                            {{r?.translations?.none }}
+                                        </ng-container>
+
+                                </div>
+
+                                <div class="replacement-quantity__converter">
+                                    <ng-container *ngIf="replacement.converter">
+                                        {{replacement.converter}}
+                                    </ng-container>
+                                </div>
+
+                                <div class="unavailable-option unavailable-option--replacement"
+                                    *ngIf="replacement.status === 3">
+                                    <i class="unavailable-option__icon ti-na"></i>
+                                    <span
+                                        class="unavailable-option__text">{{r?.translations?.articleStateUnavailable}}</span>
+                                </div>
+
+                                <div class="replacement-quantity__stepper"
+                                    *ngIf="configService?.permissions?.hasAccessToCart && replacement.status !== 3">
+
+                                    <app-stepper [isUnitTotal]="replacement.isUnitTotal"
+                                        [value]="replacement.quantity || 1"
+                                        (changeValue)="changeReplacementQuantity(i, $event)">
+                                    </app-stepper>
+
+                                </div>
+
+                                <div class="replacement-quantity__unit-group">
+
+                                    <span class="one-unit"
+                                        *ngIf="replacement.unitLockChange || replacement?.units?.size === 1">
+                                        {{replacement.auxiliaryUnit}}
+                                    </span>
+
+                                    <app-select class="replacement-quantity__unit-select"
+                                        *ngIf="!replacement.unitLockChange && replacement?.units?.size > 1"
+                                        [(ngModel)]="replacement.unitId"
+                                        (changeValue)="onReplacementUnitChange(replacement.unitId, i)">
+
+                                        <app-option *ngFor="let unit of replacement?.units | iterableToArray"
+                                            [value]="unit[0]">
+
+                                            {{unit[1].auxiliaryUnit}}
+
+                                        </app-option>
+                                    </app-select>
+                                </div>
+                            </div>
+
+
+                            <div class="to-cart inline-flex"
+                                *ngIf="configService?.permissions?.hasAccessToCart && replacement?.status !== 3">
+
+                                <app-cart-select name="cartId" [(ngModel)]="replacement.cartId">
+                                </app-cart-select>
+
+                                <button class="cart add-to-cart" (click)="addReplacementToCart(i);">
+                                    <i class="icon ti-shopping-cart"></i><span>{{r?.translations?.addToCart}}</span>
+                                </button>
+
+                            </div>
+
+                            <div class="unavailable button outline replacement-preview"
+                                *ngIf="replacement.status === 0">
+                                {{r?.translations?.articleStatePreview}}
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </app-slider>
+        </div>
+
+        <ng-template #basicDetailsWithoutVariants>
+            <div>
+                <ng-container *ngIf="!configService.isMobile">
+                    <ng-container *ngTemplateOutlet="thresholdPriceList"></ng-container>
+                </ng-container>
+
+                <div class="basic-details">
+                    <ng-container *ngTemplateOutlet="commonBasicDetails"></ng-container>
+                    <ng-container *ngTemplateOutlet="otherBasicDetails"></ng-container>
+
+                    <ng-container *ngIf="productAttributesSummary?.articleAttributes">
+                        <ng-container *ngFor="let attribute of productAttributesSummary.articleAttributes.slice(0,3)">
+                            <div *ngIf="attribute.name != 'MinimumZamówieniowe'">
+                                <!--GG-->
+                                <p class="attribute">
+                                    {{attribute.name}}
+                                </p>
+
+                                <p class="attribute">
+                                    {{attribute.value}}
+                                </p>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+
+                    <app-loading class="basic-details__loader"
+                        *ngIf="productsDetailsLoading.attributesLoading || productsDetailsLoading.generalInfoLoading">
+                    </app-loading>
+
+                </div>
+
+            </div>
+        </ng-template>
+
+        <ng-template #basicDetailsForVariants>
+            <div>
+                <div class="basic-details">
+                    <ng-container *ngTemplateOutlet="commonBasicDetails"></ng-container>
+                </div>
+            </div>
+        </ng-template>
+
+        <ng-template #commonBasicDetails>
+            <!-- <ng-container *ngIf="productBasicDetails?.manufacturer">
+                <p>{{r?.translations?.manufacturer}}</p>
+                <p>
+                    <a *ngIf="productBasicDetails?.manufacturerUrl"
+                        [href]="productBasicDetails.manufacturerUrl">{{productBasicDetails.manufacturer}}</a>
+                    <span *ngIf="!productBasicDetails?.manufacturerUrl">{{productBasicDetails.manufacturer}}</span>
+                </p>
+            </ng-container> -->
+
+            <ng-container *ngIf="productBasicDetails?.brand">
+                <p>{{r?.translations?.brand}}</p>
+                <p>{{productBasicDetails.brand}}</p>
+            </ng-container>
+
+            <!-- <ng-container *ngIf="configService?.permissions?.hasAccessToChangeDefaultWarehouse">
+                <p>{{r?.translations?.warehouse}}</p>
+
+                <app-select name="warehouseId"
+                    [disabled]="!configService?.permissions?.hasAccessToChangeDefaultWarehouse"
+                    [(ngModel)]="currentWarehouseId" (changeValue)="changeWarehouse(currentWarehouseId)">
+
+                    <ng-container *ngIf="warehousesService.warehouses !== undefined">
+                        <app-option [value]="'0'">
+                            {{r?.translations?.allWarehouse}}
+                        </app-option>
+
+                        <app-option *ngFor="let item of warehousesService.warehouses" [value]="item.id">
+                            {{item.text}}
+                        </app-option>
+                    </ng-container>
+                </app-select>
+            </ng-container> -->
+
+            <!-- <ng-container *ngIf="productBasicDetails?.manager">
+                <p>{{r?.translations?.productManager}}</p>
+                <p>
+                    <a *ngIf="productBasicDetails?.managerMail"
+                        href="mailto://{{productBasicDetails.managerMail}}">{{productBasicDetails.manager}}</a>
+                    <span *ngIf="!productBasicDetails?.managerMail">{{productBasicDetails.manager}}</span>
+                </p>
+            </ng-container>
+
+            <ng-container *ngIf="!productBasicDetails?.manager">
+                <ng-container *ngTemplateOutlet="vatValueDetails"></ng-container>
+            </ng-container> -->
+
+        </ng-template>
+
+        <ng-template #otherBasicDetails>
+            <!-- <ng-container *ngIf="productBasicDetails?.manager">
+                <ng-container *ngTemplateOutlet="vatValueDetails"></ng-container>
+            </ng-container> -->
+
+            <ng-container *ngIf="productBasicDetails?.ean">
+                <p>{{r?.translations?.ean}}</p>
+                <p>{{productBasicDetails.ean}}</p>
+            </ng-container>
+
+            <ng-container *ngIf="currentPurchaseDetails?.weightAndVolume?.bruttoWeight">
+                <p>{{r?.translations?.weight}}</p>
+                <p>
+                    {{currentPurchaseDetails.weightAndVolume.bruttoWeight}}
+                    {{r?.translations[currentPurchaseDetails.weightAndVolume.weightResourceSymbolKey]}}
+                </p>
+            </ng-container>
+
+            <ng-container *ngIf="currentPurchaseDetails?.weightAndVolume?.volume">
+                <p>{{r?.translations?.volume}}</p>
+                <p>
+                    {{currentPurchaseDetails.weightAndVolume.volume}}
+                    {{r?.translations[currentPurchaseDetails.weightAndVolume.volumeResourceSymbolKey]}}
+                </p>
+            </ng-container>
+        </ng-template>
+
+        <ng-template>
+            <ng-container *ngIf="currentPurchaseDetails?.price?.vatValue">
+                <p>{{r?.translations?.vat}}</p>
+                <p>{{currentPurchaseDetails.price.vatValue}}%</p>
+            </ng-container>
+        </ng-template>
+
+        <ng-template #thresholdPriceList>
+            <app-threshold-price-list
+                *ngIf="thresholdPriceLists?.hasAnyThresholdPriceList && !productsDetailsLoading.generalInfoLoading"
+                [thresholdPriceLists]="thresholdPriceLists" [productName]="productBaseInfo.name"
+                [productCode]="productBaseInfo.code.value">
+            </app-threshold-price-list>
+        </ng-template>
+    </div>
+</ng-container>
+
+<ng-template #error>
+    <div class="no-results-with-svg">
+
+        <app-svg-image [svgId]="'Orders'"></app-svg-image>
+
+        <div class="no-results-message">
+            <p>{{errorMessage}}</p>
+        </div>
+
+        <a class="button back-button" [routerLink]="menuService?.routePaths?.home">
+            {{r?.translations?.backToShop}}
+        </a>
+
+    </div>
+</ng-template>

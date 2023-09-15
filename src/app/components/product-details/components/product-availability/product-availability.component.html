@@ -1,0 +1,46 @@
+<section class="availability">
+    <div>
+        <span class="pair-key">{{translations?.availability}}: </span>
+
+        <ng-container *ngIf="details?.status !== 'Available'"
+                      [ngSwitch]="details?.status">
+            <ng-container *ngSwitchCase="'Preview'">{{translations?.articleStatePreview}}
+            </ng-container>
+            <ng-container *ngSwitchCase="'AvailableOnDemand'">
+                {{translations?.articleStateAvaliableOnRequest}}
+            </ng-container>
+            <ng-container *ngSwitchCase="'NotAvailable'">{{translations?.articleStateUnavailable}}
+            </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="details?.status === 'Available'"
+                      [ngSwitch]="details?.availabilityStatus">
+
+            <ng-container *ngSwitchCase="'AvailableNow'">
+                {{translations?.articleAvailabilityAvaliableNow}}
+            </ng-container>
+            <ng-container *ngSwitchCase="'AvailableIn24H'">
+                {{translations?.articleAvailabilityAvaliableIn24H}}
+            </ng-container>
+            <ng-container *ngSwitchCase="'AvailableIn48H'">
+                {{translations?.articleAvailabilityAvaliableIn48H}}
+            </ng-container>
+            <ng-container *ngSwitchCase="'AvailableFrom3To5Days'">
+                {{translations?.articleAvailabilityAvaliableFrom3To5Days}}</ng-container>
+            <ng-container *ngSwitchCase="'AvailableTo7Days'">
+                {{translations?.articleAvailabilityAvaliableTo7Days}}
+            </ng-container>
+            <ng-container *ngSwitchCase="'AvailableTo14Days'">
+                {{translations?.articleAvailabilityAvaliableTo14Days}}
+            </ng-container>
+            <ng-container *ngSwitchCase="'AvailableOver14Days'">
+                {{translations?.articleAvailabilityAvaliableToOver14Days}}</ng-container>
+
+        </ng-container>
+    </div>
+
+    <div class="availability__available-from" *ngIf="details?.status === 'Preview' && details?.availableFrom">
+        <span class="pair-key">{{translations?.availableFromDate}}:</span>
+        {{details.availableFrom | date: 'yyyy-MM-dd'}}
+    </div>
+</section>

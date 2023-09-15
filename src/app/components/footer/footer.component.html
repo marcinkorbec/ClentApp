@@ -1,0 +1,163 @@
+<div class="footer" *ngIf="isLogged == true">
+    <div class="footer-newsletter">
+        <div class="left">
+            <div class="left-img">
+                <img src="/ClientApp/assets/images/main-page/newsletter.svg" />
+            </div>
+            <div>
+                <h3>ZAPISZ SIĘ NA NEWSLETTER!</h3>
+                <p class="left-paragraph">
+                    Zostaw nam swój e-mail, aby otrzymywać informacje
+                    o nowych produktach Stalco oraz gazetki promocyjne
+                </p>
+            </div>
+        </div>
+        <div class="right">
+            <div class="sign-up">
+                <!-- <input type="text" class="mail" placeholder="Wprowadź adres email"> -->
+                <a class="btn green-button" href="https://www.stalco.pl/lp/newsletter-stalco.php" target="_blank">
+                    <span>Zapisz się</span>
+                </a>
+            </div>
+            <!-- <div class="agreement">
+                <div class="agreement-checkbox">
+                    <input type="checkbox" id="newsletter-confirm" class="newsletter-confirm" />
+                    <span>
+                        Wyrażam zgodę na otrzymywanie informacji w postaci newslettera od STALCO Sp. z o.o. S.K.A.,
+                        ul. Torowa 41, 32-050 Skawina. Zgoda jest dobrowolna. Mam prawo cofnąć zgodę w każdym
+                        czasie (dane przetwarzane są do czasu cofnięcia zgody). Mam prawo dostępu do danych,
+                        sprostowania, usunięcia lub ogarniczenia przetwarzania, prawo sprzeciwu, prawo wniesienia
+                        skargi do organu nadzorczego lub przeniesienia danych.
+                    </span>
+                </div>
+                <span style="display: block; padding-left: 2em;">
+                    Administratorem Pani/Pana danych osobowych jest STALCO Sp. z o.o. S.K.A. ul. Torowa 41,
+                    32-050 Skawina. Pełny obowiązek informacyjny znajdą Państwo pod adresem
+                    <a href="https://www.stalco.pl/dokumenty-formalne/Klauzula_informacyjna.pdf">
+                        https://www.stalco.pl/dokumenty-formalne/Klauzula_informacyjna.pdf
+                    </a>
+                </span>
+            </div> -->
+        </div>
+    </div>
+    <div class="footer-media">
+        <div class="footer-media-left"><span>BUDUJEMY <strong>ZAUFANIE</strong></span></div>
+        <div class="footer-media-right">
+            <span>Bądź z nami na:</span>
+            <a href="https://www.facebook.com/stalco.skawina" target="_blank"><img class="media-icon"
+                    src="/ClientApp//assets/images/icons/facebook.svg" /></a>
+            <a href="https://www.youtube.com/stalcogroup?sub_confirmation=1" target="_blank"><img class="media-icon"
+                    src="/ClientApp//assets/images/icons/youtube.svg" /></a>
+            <a href="https://www.instagram.com/stalco.skawina/" target="_blank"><img class="media-icon"
+                    src="/ClientApp//assets/images/icons/instagram.svg" /></a>
+            <a href="https://www.linkedin.com/company/stalco-group/" target="_blank"><img class="media-icon"
+                    src="/ClientApp//assets/images/icons/linkedin.svg" /></a>
+        </div>
+    </div>
+    <div class="footer-categories">
+        <div class="column">
+            <div class="logo"><img src="/ClientApp/assets/images/Stalco_nowe.svg" alt="{{r?.translations?.productName}}"
+                    style="width: 150px;" /></div>
+            <div><strong>STALCO Z.O O S.K.A.</strong><br />
+                ul. Torowa 41 <br />
+                32-050 SKawina
+            </div>
+            <br />
+            <div>
+                tel: <a href="tel:+48122768201">+48 12 276 82 01</a> <br />
+                e-mail: <a href="mailto:centrala@stalco.pl" target="_blank">centrala@stalco.pl</a>
+            </div>
+            <br />
+            <div>
+                <a href="mailto:centrala@stalco.pl" target="_blank">
+                    <strong>
+                        <u style="cursor: pointer;">
+                            Skontaktuj się z nami >>
+                        </u>
+                    </strong>
+                </a>
+            </div>
+        </div>
+        <div class="column">
+            <h3>{{r?.translations?.articles | uppercase}}</h3>
+            <a href="/items/55806?parent=0"><span>
+                    {{r?.translations?.menuHandTools}}</span></a>
+            <br />
+            <a href="/items/55807?parent=0"><span> Wyposażenie</span></a><br />
+            <a href="/items/55808?parent=0"><span>
+                    {{r?.translations?.menuConstructionTools}}</span></a><br />
+            <a href="/items/55809?parent=0"><span>
+                    {{r?.translations?.menuPaintingAccessories}}</span></a><br />
+            <a href="/items/558010?parent=0"><span>
+                    {{r?.translations?.menuPowerTools}}</span></a><br />
+            <a href="/items/55811?parent=0"><span>
+                    {{r?.translations?.menuAccessoriesPowerTools}}</span></a><br />
+            <a href="/items/55812?parent=0"><span>
+                    {{r?.translations?.menuMountingSystems}}</span></a><br />
+            <a href="/items/55813?parent=0"><span>
+                    {{r?.translations?.menuChemistry}}</span></a><br />
+            <a href="/items/55814?parent=0"><span>
+                    {{r?.translations?.menuBhp}}</span></a><br />
+            <a href="/items/55815?parent=0"><span>
+                    {{r?.translations?.menuGardenTools}}</span></a>
+        </div>
+        <div class="column">
+            <h3>{{r?.translations?.menuOrders | uppercase}}</h3>
+            <a [routerLink]="['/profile/orders']"><span>
+                    {{r?.translations?.menuOrdersList}}</span></a><br />
+            <a (click)='downloadDefaultCsv()'><span>
+                    {{r?.translations?.menuDownloadCsv}}</span></a><br />
+            <a [routerLink]="['/profile/promotions']"><span>
+                    {{r?.translations?.menuPromotionActivity}}</span></a><br />
+            <a [routerLink]="['/planogramyzatowarowania']"><span>
+                    {{r?.translations?.menuStockingPlanograms}}</span></a><br />
+            <a [routerLink]="['/profile/payments']"><span>
+                    {{r?.translations?.menuPayments}}</span></a><br />
+            <a [routerLink]="['/profile/delivery']"><span>
+                    {{r?.translations?.menuDelivery}}</span></a>
+        </div>
+        <div class="column">
+            <h3>{{r?.translations?.menuMarketing | uppercase}}</h3>
+            <a [routerLink]="['/profile/promotions']"><span>
+                    {{r?.translations?.menuPromotion}}</span></a> <br />
+            <a [routerLink]="['/katalogocennik']"><span>
+                    {{r?.translations?.menuCatalogPriceList}}</span></a><br />
+            <a [routerLink]="['/katalogitechniczne']"><span>
+                    {{r?.translations?.menuTechnicalCatalogs}}</span></a><br />
+            <a [routerLink]="['/nowosci']"><span>
+                    {{r?.translations?.menuNews}}</span></a><br />
+            <a [routerLink]="['/kartytechniczne']"><span>
+                    {{r?.translations?.menuTechnicalCards}}</span></a><br />
+            <a [routerLink]="['/deklaracjezgodnosci']"><span>
+                    {{r?.translations?.menuConformityDeclarations}}</span></a><br />
+            <a [routerLink]="['/logoibrandbook']"><span>
+                    {{r?.translations?.menuLogosBrandbook}}</span></a><br />
+            <a [routerLink]="['/filmyiwebinary']"><span>
+                    {{r?.translations?.menuWebinars}}</span></a>
+        </div>
+        <div class="column">
+            <h3>{{r?.translations?.support}}</h3>
+            <a [routerLink]="['/profile/complaints']"><span>
+                    {{r?.translations?.menuComplaints}}</span></a><br />
+            <a [routerLink]="['/profile/orders']"><span>
+                    {{r?.translations?.menuServiceOrdersList}}</span></a><br />
+            <a [routerLink]="['/profile/news']"><span>
+                    {{r?.translations?.news}}</span></a><br />
+            <a [routerLink]="['/profile/mydata']"><span>
+                    {{r?.translations?.menuMyData}}</span></a><br />
+            <a [routerLink]="['/profile/employees']"><span>
+                    {{r?.translations?.menuEmployees}}</span></a><br />
+            <a [routerLink]="['/profile/payments']"><span>
+                    {{r?.translations?.menuSettlementsPayments}}</span></a><br />
+            <a [routerLink]="['/kontakty']"><span>
+                    {{r?.translations?.menuContacts }}</span></a>
+        </div>
+    </div>
+    <div class="company-rights" [innerHTML]="r?.translations?.copyright"></div>
+</div>
+<div class="footer-logout" *ngIf="isLogged == false">
+    <div class="company-rights" [innerHTML]="r?.translations?.copyright"></div>
+</div>
+<!-- <div class="footer-logout">
+    <div class="company-rights" [innerHTML]="r?.translations?.copyright"></div>
+</div> -->

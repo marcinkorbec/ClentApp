@@ -1,0 +1,78 @@
+@import 'configuration.scss';
+
+.app-product-planned-deliveries {
+    .planned-deliveries {
+        &__trigger {
+            color: $danger;
+            padding-top: 10px;
+            font-size: 0.9em;
+        }
+
+        &__small {
+            font-size: 0.8rem;
+        }
+
+        .header {
+            display: grid;
+            grid-template-columns: auto auto 40px;
+            align-items: center;
+            min-height: 100px;
+            background: $background;
+            border-bottom: 1px solid $border-color;
+
+            @media (max-width: $tablet-max) {
+                grid-template-columns: auto auto 20px;
+                border-top: 1px solid $border-color;
+            }
+
+            &__icon-container {
+                text-align: center;
+                min-width: 90px;
+            }
+
+            &__icon {
+                font-size: 50px;
+                color: $popup-icon;
+            }
+        }
+
+        .text-container {
+            &__item {
+                line-height: normal;
+
+                &--main-text {
+                    font-size: 1.2em;
+                    margin-bottom: 2px;
+                }
+
+                &--product-name {
+                    color: $primary-color;
+                }
+
+                &--product-code {
+                    font-size: 0.8rem;
+                }
+            }
+        }
+
+        .body {
+            display: grid;
+            grid-template-columns: auto;
+            grid-auto-rows: 1.4em;
+            width: 70%;
+            margin: 15px auto 20px auto;
+        }
+
+        .dropdown-window {
+            padding: 0;
+            min-width: 400px;
+            background: $thirdparty-color;
+            border: 1px solid $border-color;
+
+            @media (max-width: $tablet-max) {
+                min-width: inherit;
+                padding-top: 50px;
+            }
+        }
+    }
+}

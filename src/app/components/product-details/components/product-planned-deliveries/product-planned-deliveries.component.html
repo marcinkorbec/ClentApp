@@ -1,0 +1,44 @@
+<section class="planned-deliveries" *ngIf="hasAccessToPlannedDeliveries && plannedDeliveries">
+
+    <app-dropdown>
+
+        <trigger class="planned-deliveries__trigger">
+            <i class="ti-truck"></i>
+            {{translations?.plannedDeliveries}}
+            <i class="ti-angle-down"></i>
+        </trigger>
+
+        <content>
+
+            <div class="header">
+                <div class="header__icon-container">
+                    <i class="ti-truck header__icon"></i>
+                </div>
+                <div class="text-container">
+                    <div class="text-container__item text-container__item--main-text">
+                        {{translations?.plannedCommodityDelivery}}</div>
+                    <div class="text-container__item text-container__item--product-name">{{productName}}</div>
+                    <div class="text-container__item text-container__item--product-code" *ngIf="productCode">
+                        {{productCode}}</div>
+                </div>
+                <div></div>
+            </div>
+
+            <div class="body">
+                <div class="planned-deliveries__small"><strong>{{translations?.deliveryDate}}</strong></div>
+                <!-- <div class="planned-deliveries__small"><strong>{{translations?.quantity}}</strong></div> -->
+                <ng-container *ngFor="let delivery of plannedDeliveries">
+                    <div>
+                        <ng-container *ngIf="delivery.isPlannedDateUnspecified; else dateSpecified">
+                            {{translations?.dateUnspecified}}
+                        </ng-container>
+                        <ng-template #dateSpecified>
+                            {{delivery.basicUnit}}
+                        </ng-template>
+                    </div>
+                    <!-- <div>{{delivery.quantityInBasicUnit}} </div> -->
+                </ng-container>
+            </div>
+        </content>
+    </app-dropdown>
+</section>

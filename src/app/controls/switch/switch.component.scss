@@ -1,0 +1,38 @@
+@import 'configuration.scss';
+
+.app-switch {
+    .switch {
+        &__header {
+            margin: 0;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
+    }
+
+    .options {
+        &__item {
+            margin-right: 4px;
+            background-color: $background;
+            font-family: inherit;
+            font-weight: normal;
+            font-size: 1em;
+
+            &--active {
+                &:disabled {
+                    border: 1px solid $primary-color;
+                    opacity: 1;
+                    cursor: default;
+                    color: inherit;
+                    background-color: $background;
+
+                    &:hover {
+                        border: 1px solid $primary-color;
+                        cursor: default;
+                        color: inherit;
+                        background-color: $background;
+                    }
+                }
+            }
+        }
+    }
+}

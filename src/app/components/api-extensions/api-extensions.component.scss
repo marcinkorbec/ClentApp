@@ -1,0 +1,6 @@
+.api-extensions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, max-content));
+    grid-gap: 15px;
+}
+

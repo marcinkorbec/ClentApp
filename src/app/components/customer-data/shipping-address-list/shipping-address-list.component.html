@@ -1,0 +1,81 @@
+<ng-container *ngIf="shippingAddressesSummary?.shippingAddresses?.length > 0">
+
+    <h2>{{translations?.deliveryAddresses}}</h2>
+    <section class="address-list">
+        <article class="address-wrapper" *ngFor="let address of shippingAddressesSummary.shippingAddresses">
+            <div class="address">
+                <app-loading class="small" *ngIf="currentUpdatedAddressId === address.addressId"></app-loading>
+                <app-address-form *ngIf="currentEditableAddresses[address.addressId]; else readonlyAddress"
+                                      [editAddressId]="address.addressId"
+                                      [showCloseButton]="true"
+                                      (save)="onSubmitShippingAddress($event)">
+                </app-address-form>
+
+                <ng-template #readonlyAddress>
+                    <section class="address__main">
+                        <header class="address-header">
+                            <h3 class="address-header__heading">{{address.companyName}}</h3>
+                            <span class="address-header__description">{{address.nameAndLastName}}</span>
+                        </header>
+
+                        <p class="address__description">
+                            <span>{{address.street}}</span><br />
+                            <span>{{address.zipCode}} {{address.city}}</span><br />
+                            <span class="address__country">{{address.country?.name}}</span>
+                        </p>
+                        <p class="address-contact">
+                            <span class="address-contact__item" *ngIf="address.phoneNumber">
+                                <i class="ti-mobile address-contact__icon"></i>
+                                <a href="tel:{{address.phoneNumber}}">{{address.phoneNumber}}</a>
+                            </span>
+                            <span class="address-contact__item" *ngIf="address.email">
+                                <i class="ti-email address-contact__icon"></i>
+                                <a href="mailto:{{address.email}}">{{address.email}}</a>
+                            </span>
+                        </p>
+                    </section>
+                    <section class="address-actions">
+                        <div class="address-actions__item text-link" (click)="onClickEditAddress(address)" *ngIf="address.isPossibleToEdit">
+                            <i class="ti-pencil-alt address-actions__icon"></i>
+                            <span class="address-actions__item-text">{{translations?.edit}}</span>
+                        </div>
+                    </section>
+                </ng-template>
+            </div>
+            <div class="address-info">
+                <ng-container *ngIf="shippingAddressesSummary.updatedAddressId === address.addressId">
+                    <app-status [status]="shippingAddressesSummary.updatedAddressStatus?.status"
+                                [ngSwitch]="shippingAddressesSummary.updatedAddressStatus?.saveAddressStatus"
+                                (startDisplayStatus)="onShowUpdatedAddressStatus()">
+
+                        <div class="address__status address__status--success" *ngSwitchCase="0">
+                            <i class="icon ti-check"></i>
+                            <span>{{translations?.newAddressAdded}}</span>
+                        </div>
+
+                        <div class="address__status address__status--success" *ngSwitchCase="1">
+                            <i class="icon ti-check"></i>
+                            <span>{{translations?.addressUpdated}}</span>
+                        </div>
+
+                        <div class="address__status address__status--failed" *ngSwitchCase="2">
+                            <i class="icon ti-alert"></i>
+                            <span>
+                                {{translations?.addingAddressFailed}}.<br/>
+                                {{translations?.contactWithSeller}}.
+                            </span>
+                        </div>
+
+                        <div class="address__status address__status--failed" *ngSwitchCase="3">
+                            <i class="icon ti-alert"></i>
+                            <span>
+                                {{translations?.updatingAddressFailed}}.<br />
+                                {{translations?.contactWithSeller}}.
+                            </span>
+                        </div>
+                    </app-status>
+                </ng-container>
+            </div>
+        </article>
+    </section>
+</ng-container>

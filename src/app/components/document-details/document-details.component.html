@@ -1,0 +1,434 @@
+
+<app-menu class="profile-bar" *ngIf="backMenuItem" [menuItems]="[backMenuItem]">
+
+    <div class="menu-item active-top">
+
+        <p class="label">
+            {{r?.translations[detailsContext?.headerResource]}}: <strong class="arg">{{detailsContext?.header?.number}}</strong>
+        </p>
+
+    </div>
+
+
+    <app-dropdown class="more-drop" *ngIf="configService?.isMobile; else desktop">
+
+        <trigger class="menu-item covered">
+            <button class="ti-more-alt"></button>
+        </trigger>
+
+        <content>
+
+            <form
+                class="drop-item form copy-form"
+                *ngIf="configService?.permissions?.hasAccessToCart && !detailsContext?.header?.copyToCartDisabled"
+                #copyToCartForm="ngForm"
+                (ngSubmit)="copyToCart(copyToCartForm.value.copyToCartId)">
+
+                {{r?.translations?.copyToCart}}
+
+                <app-cart-select
+                    class="choose-cart"
+                    name="copyToCartId"
+                    ngModel>
+                </app-cart-select>
+
+                <button type="submit" class="ti-share outline"></button>
+            </form>
+
+            <a class="drop-item buton" *ngIf="configService?.permissions?.hasAccessToPrinting && !detailsContext?.header?.isPrintingDisabled" (click)="detailsContext.print()">
+                <i class="ti-printer"></i>
+                {{r?.translations?.print}}
+            </a>
+        </content>
+    </app-dropdown>
+
+    <ng-template #desktop>
+
+        <form *ngIf="configService?.permissions?.hasAccessToCart && !detailsContext?.header?.copyToCartDisabled"
+              class="menu-item"
+              #copyToCartForm="ngForm"
+              (ngSubmit)="copyToCart(copyToCartForm.value.copyToCartId)">
+            {{r?.translations?.copyToCart}}
+
+            <app-cart-select
+                class="choose-cart"
+                name="copyToCartId"
+                ngModel>
+            </app-cart-select>
+
+            <button type="submit" class="ti-share"></button>
+        </form>
+
+        <a class="menu-item button makeOffer" *ngIf="detailsContext?.permissionsAndBehaviour?.isPermissionToQuoteRealize" (click)="detailsContext?.copyToCart().subscribe()">
+            <i class="ti-shopping-cart"></i><span>{{r?.translations?.quoteRealisation}}</span>
+        </a>
+
+        <a class="menu-item button print" *ngIf="configService?.permissions?.hasAccessToPrinting && !detailsContext?.header?.isPrintingDisabled" (click)="detailsContext.print()">
+            <i class="ti-printer"></i>
+            <span class="tablet-hidden">{{r?.translations?.print}}</span>
+        </a>
+
+    </ng-template>
+
+</app-menu>
+
+<div class="clear profile-container">
+
+    <div class="no-results trow box-message" *ngIf="message">
+        <i class="ti-na"></i>
+        <span>{{message}}</span>
+    </div>
+
+    <div class="no-results-with-svg" *ngIf="error">
+
+        <app-svg-image [svgId]="'Inquiries'"></app-svg-image>
+
+        <div class="no-results-message">
+            <p>{{error}}</p>
+        </div>
+
+        <a class="button back-button"
+           [routerLink]="menuService?.routePaths?.home">
+            {{r?.translations?.backToShop}}
+        </a>
+
+    </div>
+
+    <div class="box-message"
+         *ngIf="detailsContext?.permissionsAndBehaviour?.creditLimitBehaviour === CreditLimitBehaviourEnum.ShowErrorAndBlockOperation || detailsContext?.permissionsAndBehaviour?.creditLimitBehaviour === CreditLimitBehaviourEnum.ShowWarning"
+         [class.danger]="detailsContext?.permissionsAndBehaviour.creditLimitBehaviour === CreditLimitBehaviourEnum.ShowErrorAndBlockOperation"
+         [class.warning]="detailsContext?.permissionsAndBehaviour.creditLimitBehaviour === CreditLimitBehaviourEnum.ShowWarning">
+
+        <span *ngIf="detailsContext?.permissionsAndBehaviour.creditLimitBehaviour === CreditLimitBehaviourEnum.ShowErrorAndBlockOperation">            
+            <i class="ti-na"></i>
+            {{r?.translations?.creditLimitConfirmLock}}.
+        </span>
+
+        <span *ngIf="detailsContext?.permissionsAndBehaviour.creditLimitBehaviour === CreditLimitBehaviourEnum.ShowWarning">
+            <i class="ti-alert"></i>
+            {{r?.translations?.creditLimitMessage}}.
+        </span>
+
+    </div>
+
+    <ng-container *ngIf="detailsContext?.detailsBoxMessages?.showBoxMessage">
+        <div class="box-message"
+             *ngFor="let boxMessage of detailsContext?.detailsBoxMessages?.messages"
+             [ngClass]="{'danger': detailsContext?.detailsBoxMessages?.boxMessageClass === BoxMessageClass.Danger,
+                     'warning': detailsContext?.detailsBoxMessages?.boxMessageClass === BoxMessageClass.Warning}">
+
+            <span [ngSwitch]="boxMessage">
+                <i class="ti-na" *ngIf="detailsContext?.detailsBoxMessages?.boxMessageClass === BoxMessageClass.Danger"></i>
+                <i class="ti-alert" *ngIf="detailsContext?.detailsBoxMessages?.boxMessageClass === BoxMessageClass.Warning"></i>
+
+                <ng-container *ngSwitchCase="0">
+                    {{r?.translations?.quoteNotificationIsExpired}}
+                </ng-container>
+
+                <ng-container *ngSwitchCase="1">
+                    {{r?.translations?.quoteNotificationIsNotConfirmed}}
+                </ng-container>
+
+                <ng-container *ngSwitchCase="2">
+                    {{r?.translations?.quoteNotificationIsCompleted}}
+                </ng-container>
+
+                <ng-container *ngSwitchCase="3">
+                    {{r?.translations?.printFailed}}
+                </ng-container>
+
+                <ng-container *ngSwitchCase="4">
+                    {{r?.translations?.forbiddenProductsWhileRealizeQuote}}
+                </ng-container>
+
+                <ng-container *ngSwitchCase="5">
+                    {{r?.translations?.noAvailableCartsToAddArticle}}
+                </ng-container>
+            </span>
+        </div>
+    </ng-container>
+    <section class="narrow-content" *ngIf="detailsContext?.header?.number">
+        <div>
+            <div class="state inline-block" *ngIf="detailsContext?.header?.stateResourceKey">
+                {{r?.translations[detailsContext?.header?.stateResourceKey]}}
+            </div>
+
+
+            <ng-container *ngIf="detailsContext?.permissionsAndBehaviour?.canRemove">
+
+                <button *ngIf="url === this.menuService.routePaths.orderDetails"
+                        class="secondary"
+                        (click)="changeVisibility('confirmModal', true)">
+                    {{r?.translations?.removeOrder}}
+                </button>
+
+                <button *ngIf="url === this.menuService.routePaths.inquiryDetails"
+                        (click)="changeVisibility('confirmModal', true)">
+                    {{r?.translations?.removeInquiry}}
+                </button>
+
+                <app-modal [isOpened]="confirmModalVisibility"
+                           [autoClose]="false"
+                           (close)="changeVisibility('confirmModal', false)">
+
+                    <p *ngIf="url === this.menuService.routePaths.orderDetails">
+                        {{r?.translations?.areYouWantToRemoveOrder}}
+                    </p>
+
+                    <p *ngIf="url === this.menuService.routePaths.inquiryDetails">
+                        {{r?.translations?.areYouWantToRemoveInquiry}}
+                    </p>
+
+                    <button (click)="remove()">{{r?.translations?.dialogYes}}</button>
+                    <button class="pure" (click)="changeVisibility('confirmModal', false)">{{r?.translations?.dialogNo}}</button>
+
+                </app-modal>
+
+            </ng-container>
+
+            <button *ngIf="detailsContext?.permissionsAndBehaviour?.canConfirm"
+                    (click)="confirm()">
+                {{r?.translations?.confirmOrder}}
+            </button>
+
+        </div>
+
+        <div class="inner-clear flex flex-wrap infos">
+
+            <div class="gr-larger f-left header-data">
+
+                 <div class="grid-infos">
+
+                    <div class="header-item" *ngIf="detailsContext?.header?.issueDate">
+                        <small class="pair-key">{{r?.translations?.issueDate}}</small>
+                        <p>{{detailsContext.header.issueDate}}</p>
+                    </div>
+
+                    <div class="header-item" *ngIf="!detailsContext?.header?.issueDate && detailsContext?.header?.createdDate">
+                        <small class="pair-key">{{r?.translations?.createdDate}}</small>
+                        <p>{{detailsContext?.header?.createdDate}}</p>
+                    </div>
+                </div>
+
+                <div class="clear comment" *ngIf="detailsContext?.header?.comment" [innerHTML]="detailsContext.header.comment"></div>
+
+                <div class="clear details grid-infos" *ngIf="detailsVisibility">
+
+                    <ng-container *ngFor="let el of filterHeaderPropertiesForLoop(detailsContext.header) | keyvalue" [ngSwitch]="el.key">
+
+                        <div class="header-item">
+                            <small class="pair-key">
+                                {{r?.translations[el.key] || getLabelTranslation(el.key)}}
+                            </small>
+
+                            <p *ngSwitchCase="'expectedDate'">
+                                {{detailsContext.header.isExpectedDateUnspecified ? r?.translations?.dateUnspecified : detailsContext.header.expectedDate}}
+                            </p>
+
+                            <p *ngSwitchCase="'expirationDate'">
+                                {{detailsContext.header.isExpiryDateUnlimited ? r?.translations?.orderExpirationDateUnlimited : detailsContext.header.expirationDate || detailsContext.header.expireDate}}
+                            </p>
+
+                            <ng-container *ngSwitchCase="'completionEntirely'">
+                                <p *ngIf="detailsContext.header.completionEntirely === 0">{{r?.translations?.partialCompletion}}</p>
+                                <p *ngIf="detailsContext.header.completionEntirely === 1">{{r?.translations?.entireCompletion}}</p>
+                            </ng-container>
+
+                            <ng-container *ngSwitchCase="'deliveryMethod'">
+                                <p *ngIf="configService?.permissions?.hasAccessToShowDeliveryMethod; else noAccessToShowDeliveryMethod">
+                                    {{el.value}}
+                                </p>
+                                <ng-template #noAccessToShowDeliveryMethod>
+                                    <p>{{r?.translations?.noValueSymbol}}</p>
+                                </ng-template>
+                            </ng-container>
+
+
+                            <p *ngSwitchCase="'weight'">
+                                {{detailsContext.header.weight}} {{detailsContext.header.weightUnit}}
+                            </p>
+
+                            <p *ngSwitchCase="'volume'">
+                                {{detailsContext.header.volume}} m3
+                            </p>
+
+                            <p *ngSwitchCase="'totalWeight'">
+                                {{detailsContext.header.totalWeight}} kg
+                            </p>
+
+                            <ng-container *ngSwitchCase="'isSplitPayment'">
+                                <p *ngIf="detailsContext?.header?.isSplitPayment">{{r?.translations?.splitPayment}}</p>
+                            </ng-container>
+
+                            <ng-container *ngSwitchCase="'inquiryNumber'">
+                                <a [routerLink]="[menuService?.routePaths?.inquiryDetails, detailsContext.header.inquiryId]" alt="{{detailsContext.header.inquiryNumber}}">{{detailsContext.header.inquiryNumber}}</a>
+                            </ng-container>
+
+                            <p *ngSwitchDefault>
+                                {{el.value}}
+                            </p>
+                        </div>
+                        
+                    </ng-container>
+
+                    <div class="header-item" *ngIf="detailsContext.header.companyName || detailsContext.header.nameAndLastName || detailsContext.header.street || detailsContext.header.zipCode || detailsContext.header.city">
+                        <small class="pair-key block">{{r?.translations?.deliveryAddress}}</small>
+                        <p>
+                            <ng-container *ngIf="detailsContext.header.companyName || detailsContext.header.nameAndLastName">
+                                {{detailsContext.header.companyName}}<ng-container *ngIf="detailsContext.header.nameAndLastName">, {{detailsContext.header.nameAndLastName}}</ng-container>
+                                <br />
+                            </ng-container>
+                            {{detailsContext.header.street}}, {{detailsContext.header.zipCode}} {{detailsContext.header.city}}
+                        </p>
+                    </div>
+
+                    <div class="header-item" *ngFor="let attr of detailsContext.attributes">
+                        <small class="pair-key block">{{attr.name}}</small>
+                        <p>{{attr.value}}</p>
+                    </div>
+
+                    <div class="header-item" *ngFor="let doc of detailsContext.relatedDocuments">
+                        <small class="pair-key block">{{r?.translations[detailsContext.relatedDocumentTranslationKey()]}}</small>
+                        <a *ngFor="let doc of detailsContext.relatedDocuments" [routerLink]="detailsContext.relatedDocumentLinkCreator(doc)">
+                            {{doc.number}}
+                        </a>
+                    </div>
+
+                    <!-- API extensions
+                    <ng-container *ngFor="let extItem of detailsContext?.header?.extensions?.extendedItemsList | keyvalue">
+                        <app-api-extensions class="header-item" [data]="[extItem]" [removeElementContainer]="true"></app-api-extensions>
+                    </ng-container> -->
+
+                    <div class="desc" *ngIf="detailsContext?.header?.description && detailsContext?.columns?.length > 1">
+
+                        <small class="pair-key">{{r?.translations?.comment}}</small>
+
+                        <div [innerHTML]="detailsContext.header.description"></div>
+
+                    </div>
+
+                </div> 
+
+                <section class="attachments-section">
+                    <app-attachments [attachments]="detailsContext?.attachments" [attachmentsLayoutType]="'HorizontalList'"></app-attachments>
+                </section>
+            </div>
+
+            <div class="gr-smaller f-left summary-col">
+
+                <div *ngIf="configService?.permissions?.hasAccessToPriceList">
+
+                    <div class="top-summary top inner-clear"
+                         *ngIf="(detailsContext?.summaries && configService?.config?.priceMode !== 0)">
+
+                        <div class="bold inner-clear">
+                            <p class="f-left half">{{r?.translations?.total}} {{r?.translations?.gross}}</p>
+
+
+                            <p class="emphasised f-right half" *ngFor="let summary of detailsContext.summaries">
+                                {{summary.gross || summary.amount | toPrice}} {{summary.currency}}
+                            </p>
+
+                            <div class="delivery-cost clear inner-clear" *ngIf="detailsContext?.header?.costValue && detailsContext?.header?.showDeliveryCost">
+                                <div class="inner-clear">
+                                    <span class="f-left pair-key">+ {{r?.translations?.deliveryCost}}:</span>
+                                    <span class="f-right">{{detailsContext?.header?.costValue}}</span>
+                                </div>
+                            </div>
+
+                            <ng-container *ngFor="let summary of detailsContext.summaries">
+                                <ng-container *ngIf="summary.remaining || summary.remaining === 0">
+                                    <p class="f-left half">{{r?.translations?.remaining}}</p>
+                                    <p class="f-right half">
+                                        {{summary.remaining | toPrice}} {{summary.currency}}
+                                    </p>
+                                </ng-container>
+                            </ng-container>
+
+                        </div>
+
+                    </div>
+
+                    <div *ngIf="detailsContext?.summaries && detailsVisibility" class="top-summary summary">
+
+                        <div [ngClass]="{'many': detailsContext?.summaries?.length > 1}" *ngFor="let summary of detailsContext?.summaries">
+
+                            <span class="currency-label block" *ngIf="detailsContext?.summaries?.length > 1">{{summary?.currency}}</span>
+
+                            <div class="inner-clear" *ngIf="(summary.net || summary.net === 0) && configService?.config?.priceMode !== 1">
+                                <span class="f-left pair-key">{{r?.translations?.subtotalOrderValue}}:</span>
+                                <span class="f-right net">{{summary.net | toPrice}} {{summary.currency}}</span>
+                            </div>
+
+                            <div class="inner-clear" *ngIf="(summary.gross || summary.gross === 0) && configService?.config?.priceMode !== 0">
+                                <span class="f-left pair-key">{{r?.translations?.totalOrderValue}}:</span>
+                                <span class="f-right">{{summary.gross | toPrice}} {{summary.currency}}</span>
+                            </div>
+
+                            <div class="inner-clear" *ngIf="!detailsContext.header.vatValue && detailsContext.header.vatValue !== 0">
+                                <span class="f-left pair-key">{{r?.translations?.vatValue}}:</span>
+                                <span class="f-right">{{summary.gross - summary.net | toPrice}} {{summary.currency}}</span>
+                            </div>
+
+
+                        </div>
+
+                        <div class="delivery-cost" *ngIf="detailsContext?.header?.costValue && detailsContext?.header?.getDeliveryCost">
+                            <div class="inner-clear">
+                                <span class="f-left pair-key">{{r?.translations?.deliveryCost}}:</span>
+                                <span class="f-right">{{detailsContext?.header?.costValue}}</span>
+                            </div>
+                        </div>
+
+                        <div class="inner-clear" *ngIf="detailsContext?.header?.vatValue">
+
+                            <p class="f-left half pair-key" *ngIf="detailsContext.header.vatValue">{{r?.translations?.vat}}</p>
+                            <p class="f-right half">
+                                {{detailsContext.header.vatValue | toPrice}} {{detailsContext.header.currency}}
+                            </p>
+    
+                        </div>
+
+                    </div>
+
+                    
+
+                </div>
+
+                <button class="pure clear f-right toggle-visibility"
+                        (click)="changeVisibility('details')">
+
+                    <span *ngIf="!detailsVisibility"><i class="ti-angle-down"></i> {{r?.translations?.showDetails}}</span>
+
+                    <span *ngIf="detailsVisibility"><i class="ti-angle-up"></i> {{r?.translations?.hideDetails}}</span>
+
+                </button>
+
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<form>
+    <app-products-table *ngIf="detailsContext?.header && detailsConfig"
+                        [disabled]="!configService?.isOnline"
+                        [products]="detailsContext?.items"
+                        [columns]="detailsContext.columns"
+                        [summaries]="detailsContext?.summaries"
+                        [config]="detailsConfig"
+                        [oldPagination]="false"
+                        [pagination]="detailsContext?.pagination"
+                        [weight]="detailsContext?.weight"
+                        [getItemId] = "detailsContext?.getItemId"
+                        (changePage)="changePage($event)"
+                        (errorWhileAddToCart)="showErrorMessage($event)">
+    </app-products-table>
+    <div class="flex narrow-content makeOfferContainer sticky-mobile-bottom" *ngIf="detailsContext?.permissionsAndBehaviour?.isPermissionToQuoteRealize">
+        <button class="cart makeOfferButton" (click)="detailsContext?.copyToCart().subscribe()">
+            <i class="icon ti-shopping-cart"></i><span>{{r?.translations?.quoteRealisation}}</span>
+        </button>
+    </div>
+</form>
+
+
